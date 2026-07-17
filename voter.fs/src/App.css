@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+
+/* GLOBAL RESET */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #f7f5f2;
+  color: #2b2b2b;
+}
+
+h1, h2, h3, .hero-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+}
+
+
+.slider {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 10px 0;
+}
+
+.slider-track {
+  display: inline-flex;
+  white-space: nowrap;
+  gap: 3rem;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  animation: marquee 25s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.star-interactive {
+  font-size: 1.8rem;
+  color: #edebe9;
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.1s ease;
+}
+
+.star-interactive.active,
+.star-interactive:hover {
+  color: #7C9D6C; 
+  transform: scale(1.1);
+}
+
+.review-card-item {
+  border-bottom: 1px dashed #edebe9;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.review-card-item:last-child {
+  border: none;
+}
+
+
+
+
+
