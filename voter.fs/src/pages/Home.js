@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
-import { candidateData } from '../data/mockData';
 import CandidateRowCard from '../components/CandidateRowCard';
+
+const API_BASE = 'http://localhost:5000';
 
 const Home = () => {
   const navigate = useNavigate();
   const [localSearch, setLocalSearch] = useState('');
-  const featured = candidateData.slice(0, 4);
+  const [candidates, setCandidates] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/candidates`)
+      .then(res => res.json())
+      .then(data => setCandidates(data))
+      .catch(err => console.error('Failed to load candidates:', err));
+  }, []);
+
+  const featured = candidates.slice(0, 4);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();

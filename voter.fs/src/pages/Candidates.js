@@ -1,15 +1,24 @@
-import React, { useState } from 'react';
-import { candidateData } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
 import CandidateRowCard from '../components/CandidateRowCard';
 import SectionHeader from '../components/SectionHeader';
 import { Container, Form, Row, Col } from 'react-bootstrap';
 
+const API_BASE = 'http://localhost:5000';
+
 const Candidates = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [candidates, setCandidates] = useState([]);
 
-  const filteredCandidates = candidateData.filter((c) =>
+  useEffect(() => {
+    fetch(`${API_BASE}/api/candidates`)
+      .then(res => res.json())
+      .then(data => setCandidates(data))
+      .catch(err => console.error('Failed to load candidates:', err));
+  }, []);
+
+  const filteredCandidates = candidates.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.party.toLowerCase().includes(searchQuery.toLowerCase())
+    (c.party || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (

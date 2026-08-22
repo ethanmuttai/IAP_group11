@@ -1,29 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+const API_BASE = 'http://localhost:5000';
 
 const ReviewSection = ({ candidateId }) => {
 
-  const [reviews, setReviews] = useState([
-    { id: 1, user: "Anonymous Voter", rating: 4, text: "Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.", date: "2026-06-25" }
-  ]);
+  const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState("");
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
 
-  const handleSubmit = (e) => {
+  // Runs once when the page loads (and again if candidateId changes) —
+  // fetches the REAL saved reviews from the server instead of starting
+  // with a hardcoded array.
+  useEffect(() => {
+    fetch(`${API_BASE}/api/candidates/${candidateId}/reviews`)
+      .then(res => res.json())
+      .then(data => setReviews(data))
+      .catch(err => console.error('Failed to load reviews:', err));
+  }, [candidateId]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newReview.trim() || rating === 0) return;
 
-    const entry = {
-      id: Date.now(),
-      user: "Verified User",
-      rating: rating,
-      text: newReview,
-      date: new Date().toISOString().split('T')[0]
-    };
+    try {
+      const res = await fetch(`${API_BASE}/api/candidates/${candidateId}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user: 'Verified User',
+          rating: rating,
+          text: newReview
+        })
+      });
 
-    setReviews([entry, ...reviews]);
-    setNewReview("");
-    setRating(0);
+      const savedReview = await res.json();
+
+      // Add the server's saved copy (with its real id/date) to the top of the list
+      setReviews([savedReview, ...reviews]);
+      setNewReview("");
+      setRating(0);
+    } catch (err) {
+      console.error('Failed to save review:', err);
+    }
   };
 
   return (
