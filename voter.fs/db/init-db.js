@@ -1,4 +1,3 @@
-
 const Database = require('better-sqlite3');
 const fs = require('fs');
 const path = require('path');
@@ -8,17 +7,14 @@ const db = new Database(dbPath);
 
 const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
 db.exec(schema);
-
 console.log(`Database ready at ${dbPath}`);
 
 const candidateCount = db.prepare('SELECT COUNT(*) AS n FROM candidates').get().n;
 
 if (candidateCount === 0) {
   const insertCandidate = db.prepare(`
-    INSERT INTO candidates
-      (id, initials, name, party, description, experience, vision, fiscal, agriculture, governance, cost_of_living)
-    VALUES
-      (@id, @initials, @name, @party, @description, @experience, @vision, @fiscal, @agriculture, @governance, @cost_of_living)
+    INSERT INTO candidates (id, initials, name, party, description, experience, vision, fiscal, agriculture, governance, cost_of_living)
+    VALUES (@id, @initials, @name, @party, @description, @experience, @vision, @fiscal, @agriculture, @governance, @cost_of_living)
   `);
 
   const candidates = [
@@ -103,7 +99,7 @@ if (reviewCount === 0) {
   console.log(`reviews table already has ${reviewCount} row(s), skipping review seed.`);
 }
 
-//calculation for API later.
+// Calculation for API later.
 console.log('\nComputed ratings (candidate_ratings view):');
 console.log(db.prepare('SELECT * FROM candidate_ratings').all());
 

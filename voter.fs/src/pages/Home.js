@@ -26,7 +26,7 @@ const Home = () => {
 
   return (
     <Container className="py-5 text-start">
-      
+
       {/* Hero Header Area */}
       <div className="mb-5 pt-2">
         {/* Kenyan National Colors Dot Badge Grid */}
@@ -56,7 +56,7 @@ const Home = () => {
           <div className="p-2 bg-white border rounded-4 shadow-sm d-flex align-items-center justify-content-between" style={{ borderRadius: '14px' }}>
             <div className="d-flex align-items-center flex-grow-1 px-2 gap-2">
               <span className="text-muted" style={{ fontSize: '1.1rem' }}>🔍</span>
-              <Form.Control 
+              <Form.Control
                 type="text"
                 placeholder="Search candidates, parties or counties..."
                 className="border-0 shadow-none p-2 bg-transparent"
@@ -65,7 +65,7 @@ const Home = () => {
                 onChange={(e) => setLocalSearch(e.target.value)}
               />
             </div>
-            <Button 
+            <Button
               type="submit"
               className="border-0 text-white px-4 py-2 fw-bold"
               style={{ backgroundColor: '#5B7053', borderRadius: '8px', fontSize: '0.95rem' }}
