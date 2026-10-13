@@ -35,6 +35,7 @@ const Layout = () => {
             <Link to="/" className="fw-bold text-decoration-none" style={{ color: location.pathname === '/' ? '#5B7053' : '#1a1a1a' }}>Home</Link>
             <Link to="/candidates" className="fw-bold text-decoration-none" style={{ color: location.pathname === '/candidates' ? '#5B7053' : '#1a1a1a' }}>Candidates</Link>
             <Link to="/compare" className="fw-bold text-decoration-none" style={{ color: location.pathname === '/compare' ? '#5B7053' : '#1a1a1a' }}>Compare</Link>
+            <Link to="/polling-station" className="fw-bold text-decoration-none" style={{ color: location.pathname === '/polling-station' ? '#5B7053' : '#1a1a1a' }}>Get There</Link>
           </div>
         </Container>
       </nav>
