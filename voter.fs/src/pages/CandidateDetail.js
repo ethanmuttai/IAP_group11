@@ -1,15 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Container, Table, Button } from 'react-bootstrap';
-import { candidateData } from '../data/mockData';
 import ReviewSection from '../components/ReviewSection';
+
+const API_BASE = 'http://localhost:5000';
 
 const CandidateDetail = () => {
   const { id } = useParams();
+  const [candidate, setCandidate] = useState(null);
+  const [notFound, setNotFound] = useState(false);
 
-  const candidate = candidateData.find(c => String(c.id) === String(id));
+  useEffect(() => {
+    setCandidate(null);
+    setNotFound(false);
 
-  if (!candidate) {
+    fetch(`${API_BASE}/api/candidates/${id}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Not found');
+        return res.json();
+      })
+      .then(data => setCandidate(data))
+      .catch(() => setNotFound(true));
+  }, [id]);
+
+  if (notFound) {
     return (
       <Container className="py-5 text-center" style={{ marginTop: '5rem' }}>
         <h4 className="fw-bold text-dark">Candidate Profile Not Found</h4>
@@ -17,6 +31,14 @@ const CandidateDetail = () => {
         <Link to="/">
           <Button variant="dark" className="mt-3 px-4">Back to Dashboard</Button>
         </Link>
+      </Container>
+    );
+  }
+
+  if (!candidate) {
+    return (
+      <Container className="py-5 text-center" style={{ marginTop: '5rem' }}>
+        <p className="text-muted">Loading candidate profile...</p>
       </Container>
     );
   }
@@ -81,7 +103,7 @@ const CandidateDetail = () => {
           </tr>
           <tr>
             <td className="fw-bold small text-dark">Cost of Living Mitigation</td>
-            <td className="small text-secondary">{candidate.costOfLiving || "No information available."}</td>
+            <td className="small text-secondary">{candidate.cost_of_living || "No information available."}</td>
           </tr>
         </tbody>
       </Table>

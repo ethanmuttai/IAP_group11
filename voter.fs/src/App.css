@@ -18,7 +18,6 @@ h1, h2, h3, .hero-title {
   font-weight: 900;
 }
 
-
 .slider {
   width: 100%;
   overflow: hidden;
@@ -54,7 +53,7 @@ h1, h2, h3, .hero-title {
 
 .star-interactive.active,
 .star-interactive:hover {
-  color: #7C9D6C; 
+  color: #7C9D6C;
   transform: scale(1.1);
 }
 
@@ -67,8 +66,3 @@ h1, h2, h3, .hero-title {
 .review-card-item:last-child {
   border: none;
 }
-
-
-
-
-

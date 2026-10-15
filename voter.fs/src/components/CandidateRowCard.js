@@ -6,6 +6,12 @@ const CandidateRowCard = ({ candidate, index }) => {
   const thematicColors = ['#5B7053', '#8B1E1E', '#2E4A62', '#D9A74A'];
   const currentTheme = thematicColors[index % thematicColors.length];
 
+  // average_rating comes from the server now (real average of that
+  // candidate's reviews). If there are no reviews yet, it'll be null,
+  // so we fall back to 0 and show all empty stars.
+  const rating = candidate.average_rating ?? 0;
+  const reviewCount = candidate.review_count ?? 0;
+
   return (
     <Link to={`/candidates/${candidate.id}`} className="text-decoration-none text-dark">
       <div className="p-4 bg-white border rounded-4 shadow-sm mb-3 candidate-card-hover" style={{ cursor: 'pointer' }}>
@@ -38,9 +44,13 @@ const CandidateRowCard = ({ candidate, index }) => {
 
           <div className="text-end">
             <div className="d-flex align-items-center gap-1 mb-1" style={{ color: currentTheme }}>
-              <span>★</span><span>★</span><span>★</span><span>★</span><span className="text-muted">★</span>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span key={star} className={star <= Math.round(rating) ? '' : 'text-muted'}>★</span>
+              ))}
             </div>
-            <small className="text-muted d-block">4.0 Rating</small>
+            <small className="text-muted d-block">
+              {reviewCount > 0 ? `${rating.toFixed(1)} Rating` : 'No ratings yet'}
+            </small>
           </div>
         </div>
       </div>

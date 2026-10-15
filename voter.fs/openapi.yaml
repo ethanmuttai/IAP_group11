@@ -1,0 +1,383 @@
+openapi: 3.0.0
+
+info:
+  title: Voter Edu API
+  version: 1.0.0
+  description: >
+    API exposed by Voter Edu to downstream partners for accessing candidate
+    information, policy positions, and candidate reviews. The API supports
+    reading candidate information and creating reviews.
+
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+
+paths:
+  /candidates:
+    get:
+      summary: Return the list of candidates with their profiles and policy positions
+      responses:
+        '200':
+          description: A list of candidates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Candidate'
+              example:
+                - id: "ruto"
+                  initials: "WR"
+                  name: "Dr. William Ruto"
+                  party: "Kenya Kwanza Alliance / UDA"
+                  description: "Current President of Kenya with experience in national government."
+                  experience: "Current President of Kenya (2022-2026), former Deputy President (2013-2022)."
+                  vision: "The Bottom-Up Economic Transformation Agenda (BETA)."
+                  fiscal: "Expanding the formal tax base to manage public debt."
+                  agriculture: "Subsidized farm inputs and fertilizer distribution."
+                  governance: "Protecting and increasing funding to the 47 counties."
+                  cost_of_living: "Cutting consumer levies and production taxes."
+                  average_rating: 4.0
+                  review_count: 1
+
+  /candidates/{candidateId}:
+    get:
+      summary: Return the full profile of a single candidate
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          description: Unique identifier of the candidate
+          schema:
+            type: string
+            example: "ruto"
+      responses:
+        '200':
+          description: The requested candidate profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Candidate'
+              example:
+                id: "ruto"
+                initials: "WR"
+                name: "Dr. William Ruto"
+                party: "Kenya Kwanza Alliance / UDA"
+                description: "Current President of Kenya with experience in national government."
+                experience: "Current President of Kenya (2022-2026), former Deputy President (2013-2022)."
+                vision: "The Bottom-Up Economic Transformation Agenda (BETA)."
+                fiscal: "Expanding the formal tax base to manage public debt."
+                agriculture: "Subsidized farm inputs and fertilizer distribution."
+                governance: "Protecting and increasing funding to the 47 counties."
+                cost_of_living: "Cutting consumer levies and production taxes."
+                average_rating: 4.0
+                review_count: 1
+
+        '404':
+          description: No candidate exists with the given candidate ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "NOT_FOUND"
+                message: "Candidate not found"
+
+  /candidates/{candidateId}/reviews:
+    get:
+      summary: Return all reviews for a candidate, optionally filtered by minimum rating
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          description: Unique identifier of the candidate
+          schema:
+            type: string
+            example: "ruto"
+
+        - name: minRating
+          in: query
+          required: false
+          description: Return only reviews with a rating greater than or equal to this value
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            example: 4
+
+      responses:
+        '200':
+          description: A list of reviews for the candidate
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+              example:
+                - id: 1
+                  candidate_id: "ruto"
+                  user: "Anonymous Voter"
+                  rating: 4
+                  text: "Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables."
+                  date: "2026-06-25"
+
+        '400':
+          description: Invalid minimum rating supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "INVALID_PARAMETER"
+                message: "minRating must be an integer between 1 and 5"
+
+        '404':
+          description: No candidate exists with the given candidate ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "NOT_FOUND"
+                message: "Candidate not found"
+
+    post:
+      summary: Add a new review for a candidate
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          description: Unique identifier of the candidate being reviewed
+          schema:
+            type: string
+            example: "ruto"
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewRequest'
+            example:
+              user: "Verified User"
+              rating: 5
+              text: "The candidate has clearly communicated their policy priorities."
+
+      responses:
+        '201':
+          description: Review created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+              example:
+                id: 2
+                candidate_id: "ruto"
+                user: "Verified User"
+                rating: 5
+                text: "The candidate has clearly communicated their policy priorities."
+                date: "2026-06-26"
+
+        '400':
+          description: Missing or invalid review information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "INVALID_REVIEW"
+                message: "rating and text are required"
+
+        '404':
+          description: No candidate exists with the given candidate ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "NOT_FOUND"
+                message: "Candidate not found"
+
+components:
+  schemas:
+
+    Candidate:
+      type: object
+      required:
+        - id
+        - name
+        - average_rating
+        - review_count
+      properties:
+        id:
+          type: string
+          example: "ruto"
+
+        initials:
+          type: string
+          nullable: true
+          example: "WR"
+
+        name:
+          type: string
+          example: "Dr. William Ruto"
+
+        party:
+          type: string
+          nullable: true
+          example: "Kenya Kwanza Alliance / UDA"
+
+        description:
+          type: string
+          nullable: true
+          example: "Current President of Kenya with experience in national government."
+
+        experience:
+          type: string
+          nullable: true
+          example: "Current President of Kenya (2022-2026), former Deputy President (2013-2022)."
+
+        vision:
+          type: string
+          nullable: true
+          example: "The Bottom-Up Economic Transformation Agenda (BETA)."
+
+        fiscal:
+          type: string
+          nullable: true
+          example: "Expanding the formal tax base to manage public debt."
+
+        agriculture:
+          type: string
+          nullable: true
+          example: "Subsidized farm inputs and fertilizer distribution."
+
+        governance:
+          type: string
+          nullable: true
+          example: "Protecting and increasing funding to the 47 counties."
+
+        cost_of_living:
+          type: string
+          nullable: true
+          example: "Cutting consumer levies and production taxes."
+
+        average_rating:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 5
+          nullable: true
+          example: 4.0
+
+        review_count:
+          type: integer
+          minimum: 0
+          example: 1
+
+      example:
+        id: "ruto"
+        initials: "WR"
+        name: "Dr. William Ruto"
+        party: "Kenya Kwanza Alliance / UDA"
+        description: "Current President of Kenya with experience in national government."
+        experience: "Current President of Kenya (2022-2026), former Deputy President (2013-2022)."
+        vision: "The Bottom-Up Economic Transformation Agenda (BETA)."
+        fiscal: "Expanding the formal tax base to manage public debt."
+        agriculture: "Subsidized farm inputs and fertilizer distribution."
+        governance: "Protecting and increasing funding to the 47 counties."
+        cost_of_living: "Cutting consumer levies and production taxes."
+        average_rating: 4.0
+        review_count: 1
+
+    Review:
+      type: object
+      required:
+        - id
+        - candidate_id
+        - user
+        - rating
+        - text
+        - date
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+
+        candidate_id:
+          type: string
+          example: "ruto"
+
+        user:
+          type: string
+          example: "Anonymous Voter"
+
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 4
+
+        text:
+          type: string
+          example: "Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables."
+
+        date:
+          type: string
+          format: date
+          example: "2026-06-25"
+
+      example:
+        id: 1
+        candidate_id: "ruto"
+        user: "Anonymous Voter"
+        rating: 4
+        text: "Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables."
+        date: "2026-06-25"
+
+    CreateReviewRequest:
+      type: object
+      required:
+        - rating
+        - text
+      properties:
+        user:
+          type: string
+          description: Name of the reviewer. Defaults to Anonymous Voter if omitted.
+          default: "Anonymous Voter"
+          example: "Verified User"
+
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+
+        text:
+          type: string
+          example: "The candidate has clearly communicated their policy priorities."
+
+      example:
+        user: "Verified User"
+        rating: 5
+        text: "The candidate has clearly communicated their policy priorities."
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: "NOT_FOUND"
+
+        message:
+          type: string
+          example: "Candidate not found"
+
+      example:
+        code: "NOT_FOUND"
+        message: "Candidate not found"
