@@ -1,0 +1,582 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Voter Edu API</title>
+    <style type="text/css">
+      body {
+      	font-family: Trebuchet MS, sans-serif;
+      	font-size: 15px;
+      	color: #444;
+      	margin-right: 24px;
+      }
+      
+      h1	{
+      	font-size: 25px;
+      }
+      h2	{
+      	font-size: 20px;
+      }
+      h3	{
+      	font-size: 16px;
+      	font-weight: bold;
+      }
+      hr	{
+      	height: 1px;
+      	border: 0;
+      	color: #ddd;
+      	background-color: #ddd;
+      }
+      
+      .app-desc {
+        clear: both;
+        margin-left: 20px;
+      }
+      .param-name {
+        width: 100%;
+      }
+      .license-info {
+        margin-left: 20px;
+      }
+      
+      .license-url {
+        margin-left: 20px;
+      }
+      
+      .model {
+        margin: 0 0 0px 20px;
+      }
+      
+      .method {
+        margin-left: 20px;
+      }
+      
+      .method-notes	{
+      	margin: 10px 0 20px 0;
+      	font-size: 90%;
+      	color: #555;
+      }
+      
+      pre {
+        padding: 10px;
+        margin-bottom: 2px;
+      }
+      
+      .http-method {
+       text-transform: uppercase;
+      }
+      
+      pre.get {
+        background-color: #0f6ab4;
+      }
+      
+      pre.post {
+        background-color: #10a54a;
+      }
+      
+      pre.put {
+        background-color: #c5862b;
+      }
+      
+      pre.delete {
+        background-color: #a41e22;
+      }
+      
+      .huge	{
+      	color: #fff;
+      }
+      
+      pre.example {
+        background-color: #f3f3f3;
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+      
+      code {
+        white-space: pre;
+      }
+      
+      .nickname {
+        font-weight: bold;
+      }
+      
+      .method-path {
+        font-size: 1.5em;
+        background-color: #0f6ab4;
+      }
+      
+      .up {
+        float:right;
+      }
+      
+      .parameter {
+        width: 500px;
+      }
+      
+      .param {
+        width: 500px;
+        padding: 10px 0 0 20px;
+        font-weight: bold;
+      }
+      
+      .param-desc {
+        width: 700px;
+        padding: 0 0 0 20px;
+        color: #777;
+      }
+      
+      .param-type {
+        font-style: italic;
+      }
+      
+      .param-enum-header {
+      width: 700px;
+      padding: 0 0 0 60px;
+      color: #777;
+      font-weight: bold;
+      }
+      
+      .param-enum {
+      width: 700px;
+      padding: 0 0 0 80px;
+      color: #777;
+      font-style: italic;
+      }
+      
+      .field-label {
+        padding: 0;
+        margin: 0;
+        clear: both;
+      }
+      
+      .field-items	{
+      	padding: 0 0 15px 0;
+      	margin-bottom: 15px;
+      }
+      
+      .return-type {
+        clear: both;
+        padding-bottom: 10px;
+      }
+      
+      .param-header {
+        font-weight: bold;
+      }
+      
+      .method-tags {
+        text-align: right;
+      }
+      
+      .method-tag {
+        background: none repeat scroll 0% 0% #24A600;
+        border-radius: 3px;
+        padding: 2px 10px;
+        margin: 2px;
+        color: #FFF;
+        display: inline-block;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+  <h1>Voter Edu API</h1>
+    <div class="app-desc">API exposed by Voter Edu to downstream partners for accessing candidate information, policy positions, and candidate reviews. The API supports reading candidate information and creating reviews.</div>
+    <div class="app-desc">More information: <a href="https://helloreverb.com">https://helloreverb.com</a></div>
+    <div class="app-desc">Contact Info: <a href="hello@helloreverb.com">hello@helloreverb.com</a></div>
+    <div class="app-desc">Version: 1.0.0</div>
+    <div class="app-desc">BasePath:/api</div>
+    <div class="license-info">All rights reserved</div>
+    <div class="license-url">http://apache.org/licenses/LICENSE-2.0.html</div>
+  <h2>Access</h2>
+
+  <h2><a name="__Methods">Methods</a></h2>
+  [ Jump to <a href="#__Models">Models</a> ]
+
+  <h3>Table of Contents </h3>
+  <div class="method-summary"></div>
+  <h4><a href="#Default">Default</a></h4>
+  <ul>
+  <li><a href="#candidatesCandidateIdGet"><code><span class="http-method">get</span> /candidates/{candidateId}</code></a></li>
+  <li><a href="#candidatesCandidateIdReviewsGet"><code><span class="http-method">get</span> /candidates/{candidateId}/reviews</code></a></li>
+  <li><a href="#candidatesCandidateIdReviewsPost"><code><span class="http-method">post</span> /candidates/{candidateId}/reviews</code></a></li>
+  <li><a href="#candidatesGet"><code><span class="http-method">get</span> /candidates</code></a></li>
+  </ul>
+
+  <h1><a name="Default">Default</a></h1>
+  <div class="method"><a name="candidatesCandidateIdGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /candidates/{candidateId}</code></pre></div>
+    <div class="method-summary">Return the full profile of a single candidate (<span class="nickname">candidatesCandidateIdGet</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">candidateId (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Candidate">Candidate</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "id" : "ruto",
+  "initials" : "WR",
+  "name" : "Dr. William Ruto",
+  "party" : "Kenya Kwanza Alliance / UDA",
+  "description" : "Current President of Kenya with experience in national government.",
+  "experience" : "Current President of Kenya (2022-2026), former Deputy President (2013-2022).",
+  "vision" : "The Bottom-Up Economic Transformation Agenda (BETA).",
+  "fiscal" : "Expanding the formal tax base to manage public debt.",
+  "agriculture" : "Subsidized farm inputs and fertilizer distribution.",
+  "governance" : "Protecting and increasing funding to the 47 counties.",
+  "cost_of_living" : "Cutting consumer levies and production taxes.",
+  "average_rating" : 4,
+  "review_count" : 1
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    The requested candidate profile
+        <a href="#Candidate">Candidate</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;id&quot;:&quot;ruto&quot;,&quot;initials&quot;:&quot;WR&quot;,&quot;name&quot;:&quot;Dr. William Ruto&quot;,&quot;party&quot;:&quot;Kenya Kwanza Alliance / UDA&quot;,&quot;description&quot;:&quot;Current President of Kenya with experience in national government.&quot;,&quot;experience&quot;:&quot;Current President of Kenya (2022-2026), former Deputy President (2013-2022).&quot;,&quot;vision&quot;:&quot;The Bottom-Up Economic Transformation Agenda (BETA).&quot;,&quot;fiscal&quot;:&quot;Expanding the formal tax base to manage public debt.&quot;,&quot;agriculture&quot;:&quot;Subsidized farm inputs and fertilizer distribution.&quot;,&quot;governance&quot;:&quot;Protecting and increasing funding to the 47 counties.&quot;,&quot;cost_of_living&quot;:&quot;Cutting consumer levies and production taxes.&quot;,&quot;average_rating&quot;:4,&quot;review_count&quot;:1}</code></pre>
+    <h4 class="field-label">404</h4>
+    No candidate exists with the given candidate ID
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;NOT_FOUND&quot;,&quot;message&quot;:&quot;Candidate not found&quot;}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="candidatesCandidateIdReviewsGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /candidates/{candidateId}/reviews</code></pre></div>
+    <div class="method-summary">Return all reviews for a candidate, optionally filtered by minimum rating (<span class="nickname">candidatesCandidateIdReviewsGet</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">candidateId (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate </div>    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">minRating (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Return only reviews with a rating greater than or equal to this value </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#Review">Review</a>]
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[ {
+  "id" : 1,
+  "candidate_id" : "ruto",
+  "user" : "Anonymous Voter",
+  "rating" : 4,
+  "text" : "Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.",
+  "date" : "2026-06-25"
+}, {
+  "id" : 1,
+  "candidate_id" : "ruto",
+  "user" : "Anonymous Voter",
+  "rating" : 4,
+  "text" : "Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.",
+  "date" : "2026-06-25"
+} ]</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    A list of reviews for the candidate
+        
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[{&quot;id&quot;:1,&quot;candidate_id&quot;:&quot;ruto&quot;,&quot;user&quot;:&quot;Anonymous Voter&quot;,&quot;rating&quot;:4,&quot;text&quot;:&quot;Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.&quot;,&quot;date&quot;:&quot;2026-06-25&quot;}]</code></pre>
+    <h4 class="field-label">400</h4>
+    Invalid minimum rating supplied
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;INVALID_PARAMETER&quot;,&quot;message&quot;:&quot;minRating must be an integer between 1 and 5&quot;}</code></pre>
+    <h4 class="field-label">404</h4>
+    No candidate exists with the given candidate ID
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;NOT_FOUND&quot;,&quot;message&quot;:&quot;Candidate not found&quot;}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="candidatesCandidateIdReviewsPost"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /candidates/{candidateId}/reviews</code></pre></div>
+    <div class="method-summary">Add a new review for a candidate (<span class="nickname">candidatesCandidateIdReviewsPost</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">candidateId (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate being reviewed </div>    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#CreateReviewRequest">CreateReviewRequest</a> (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+            <div class="param-desc"><span class="param-type">example: <code>{
+  &quot;user&quot; : &quot;Verified User&quot;,
+  &quot;rating&quot; : 5,
+  &quot;text&quot; : &quot;The candidate has clearly communicated their policy priorities.&quot;
+}</code></span></div>    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Review">Review</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "id" : 1,
+  "candidate_id" : "ruto",
+  "user" : "Anonymous Voter",
+  "rating" : 4,
+  "text" : "Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.",
+  "date" : "2026-06-25"
+}</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">201</h4>
+    Review created successfully
+        <a href="#Review">Review</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;id&quot;:2,&quot;candidate_id&quot;:&quot;ruto&quot;,&quot;user&quot;:&quot;Verified User&quot;,&quot;rating&quot;:5,&quot;text&quot;:&quot;The candidate has clearly communicated their policy priorities.&quot;,&quot;date&quot;:&quot;2026-06-26&quot;}</code></pre>
+    <h4 class="field-label">400</h4>
+    Missing or invalid review information
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;INVALID_REVIEW&quot;,&quot;message&quot;:&quot;rating and text are required&quot;}</code></pre>
+    <h4 class="field-label">404</h4>
+    No candidate exists with the given candidate ID
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;NOT_FOUND&quot;,&quot;message&quot;:&quot;Candidate not found&quot;}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="candidatesGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /candidates</code></pre></div>
+    <div class="method-summary">Return the list of candidates with their profiles and policy positions (<span class="nickname">candidatesGet</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#Candidate">Candidate</a>]
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[ {
+  "id" : "ruto",
+  "initials" : "WR",
+  "name" : "Dr. William Ruto",
+  "party" : "Kenya Kwanza Alliance / UDA",
+  "description" : "Current President of Kenya with experience in national government.",
+  "experience" : "Current President of Kenya (2022-2026), former Deputy President (2013-2022).",
+  "vision" : "The Bottom-Up Economic Transformation Agenda (BETA).",
+  "fiscal" : "Expanding the formal tax base to manage public debt.",
+  "agriculture" : "Subsidized farm inputs and fertilizer distribution.",
+  "governance" : "Protecting and increasing funding to the 47 counties.",
+  "cost_of_living" : "Cutting consumer levies and production taxes.",
+  "average_rating" : 4,
+  "review_count" : 1
+}, {
+  "id" : "ruto",
+  "initials" : "WR",
+  "name" : "Dr. William Ruto",
+  "party" : "Kenya Kwanza Alliance / UDA",
+  "description" : "Current President of Kenya with experience in national government.",
+  "experience" : "Current President of Kenya (2022-2026), former Deputy President (2013-2022).",
+  "vision" : "The Bottom-Up Economic Transformation Agenda (BETA).",
+  "fiscal" : "Expanding the formal tax base to manage public debt.",
+  "agriculture" : "Subsidized farm inputs and fertilizer distribution.",
+  "governance" : "Protecting and increasing funding to the 47 counties.",
+  "cost_of_living" : "Cutting consumer levies and production taxes.",
+  "average_rating" : 4,
+  "review_count" : 1
+} ]</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    A list of candidates
+        
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[{&quot;id&quot;:&quot;ruto&quot;,&quot;initials&quot;:&quot;WR&quot;,&quot;name&quot;:&quot;Dr. William Ruto&quot;,&quot;party&quot;:&quot;Kenya Kwanza Alliance / UDA&quot;,&quot;description&quot;:&quot;Current President of Kenya with experience in national government.&quot;,&quot;experience&quot;:&quot;Current President of Kenya (2022-2026), former Deputy President (2013-2022).&quot;,&quot;vision&quot;:&quot;The Bottom-Up Economic Transformation Agenda (BETA).&quot;,&quot;fiscal&quot;:&quot;Expanding the formal tax base to manage public debt.&quot;,&quot;agriculture&quot;:&quot;Subsidized farm inputs and fertilizer distribution.&quot;,&quot;governance&quot;:&quot;Protecting and increasing funding to the 47 counties.&quot;,&quot;cost_of_living&quot;:&quot;Cutting consumer levies and production taxes.&quot;,&quot;average_rating&quot;:4,&quot;review_count&quot;:1}]</code></pre>
+  </div> <!-- method -->
+  <hr/>
+
+  <h2><a name="__Models">Models</a></h2>
+  [ Jump to <a href="#__Methods">Methods</a> ]
+
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#Candidate"><code>Candidate</code></a></li>
+    <li><a href="#CreateReviewRequest"><code>CreateReviewRequest</code></a></li>
+    <li><a href="#Error"><code>Error</code></a></li>
+    <li><a href="#Review"><code>Review</code></a></li>
+  </ol>
+
+  <div class="model">
+    <h3><a name="Candidate"><code>Candidate</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">id </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: ruto</span></div>
+<div class="param">initials (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: WR</span></div>
+<div class="param">name </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Dr. William Ruto</span></div>
+<div class="param">party (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Kenya Kwanza Alliance / UDA</span></div>
+<div class="param">description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Current President of Kenya with experience in national government.</span></div>
+<div class="param">experience (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Current President of Kenya (2022-2026), former Deputy President (2013-2022).</span></div>
+<div class="param">vision (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: The Bottom-Up Economic Transformation Agenda (BETA).</span></div>
+<div class="param">fiscal (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Expanding the formal tax base to manage public debt.</span></div>
+<div class="param">agriculture (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Subsidized farm inputs and fertilizer distribution.</span></div>
+<div class="param">governance (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Protecting and increasing funding to the 47 counties.</span></div>
+<div class="param">cost_of_living (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Cutting consumer levies and production taxes.</span></div>
+<div class="param">average_rating </div><div class="param-desc"><span class="param-type"><a href="#float">Float</a></span>  format: float</div>
+          <div class="param-desc"><span class="param-type">example: 4</span></div>
+<div class="param">review_count </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="CreateReviewRequest"><code>CreateReviewRequest</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">user (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Name of the reviewer. Defaults to Anonymous Voter if omitted. </div>
+          <div class="param-desc"><span class="param-type">example: Verified User</span></div>
+<div class="param">rating </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: 5</span></div>
+<div class="param">text </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: The candidate has clearly communicated their policy priorities.</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="Error"><code>Error</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">code </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: NOT_FOUND</span></div>
+<div class="param">message </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Candidate not found</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="Review"><code>Review</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">id </div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">candidate_id </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: ruto</span></div>
+<div class="param">user </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Anonymous Voter</span></div>
+<div class="param">rating </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: 4</span></div>
+<div class="param">text </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.</span></div>
+<div class="param">date </div><div class="param-desc"><span class="param-type"><a href="#date">date</a></span>  format: date</div>
+          <div class="param-desc"><span class="param-type">example: Thu Jun 25 00:00:00 GMT 2026</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  </body>
+</html>
