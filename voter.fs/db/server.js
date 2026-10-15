@@ -4,7 +4,7 @@ const Database = require('better-sqlite3');
 const path = require('path');
 
 const app = express();
-const PORT = 5000; // React runs on 3000, so the server needs a different port
+const PORT = process.env.PORT || 5000; // React runs on 3000, so the server needs a different port
 
 // Let the React app (running on a different port) make requests to us
 app.use(cors());
