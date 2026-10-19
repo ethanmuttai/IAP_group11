@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Table, Alert, Row, Col } from 'react-bootstrap';
 import SectionHeader from '../components/SectionHeader';
 
-// TODO: swap this for RideCompare's real base URL once Group 10 confirms it —
-// their openapi.yaml doesn't include a `servers` block, so this is a guess
-// (their own server presumably runs on a different port than ours, 5000).
-const RIDECOMPARE_BASE = 'http://localhost:5001';
+// Point directly to your local Express backend proxy running on port 5000
+const API_BASE = 'http://localhost:5000/api/transport';
 
 const PollingStationLocator = () => {
   const [landmarks, setLandmarks] = useState([]);
@@ -21,14 +19,19 @@ const PollingStationLocator = () => {
   const [searchError, setSearchError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
 
-  // Load the landmark list once on mount — this is what lets a voter pick
-  // "Uhuru Park" instead of typing raw lat/lng coordinates.
+  // Fetch landmarks via backend proxy on component mount
   useEffect(() => {
-    fetch(`${RIDECOMPARE_BASE}/landmarks`)
-      .then((res) => res.json())
-      .then((data) => setLandmarks(data))
+    fetch(`${API_BASE}/landmarks`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch landmarks');
+        return res.json();
+      })
+      .then((data) => {
+        setLandmarks(data);
+        setLandmarksError(false);
+      })
       .catch((err) => {
-        console.error('Failed to load landmarks from RideCompare:', err);
+        console.error('Failed to load landmarks from proxy:', err);
         setLandmarksError(true);
       });
   }, []);
@@ -37,8 +40,9 @@ const PollingStationLocator = () => {
     e.preventDefault();
     if (!pickupId || !dropoffId) return;
 
-    const pickup = landmarks.find((l) => l.id === pickupId);
-    const dropoff = landmarks.find((l) => l.id === dropoffId);
+    // String comparison handles both string and numeric IDs safely
+    const pickup = landmarks.find((l) => String(l.id) === String(pickupId));
+    const dropoff = landmarks.find((l) => String(l.id) === String(dropoffId));
     if (!pickup || !dropoff) return;
 
     setLoading(true);
@@ -51,17 +55,29 @@ const PollingStationLocator = () => {
       dropoff_lat: dropoff.location.lat,
       dropoff_lng: dropoff.location.lng,
     });
-    if (rideType) params.append('type', rideType);
-    if (sortBy) params.append('sort', sortBy);
 
     try {
-      const res = await fetch(`${RIDECOMPARE_BASE}/rides?${params.toString()}`);
+      const res = await fetch(`${API_BASE}/rides?${params.toString()}`);
       if (!res.ok) {
-        // RideCompare's 400 responses carry { code, message } per their contract
         const errBody = await res.json().catch(() => null);
         throw new Error(errBody?.message || 'Could not fetch ride estimates.');
       }
-      const data = await res.json();
+      let data = await res.json();
+
+      // Client-side filtering for branded rideType strings (e.g., "Uber Chapchap", "Bolt Boda")
+      if (rideType) {
+        data = data.filter((r) =>
+          r.rideType && r.rideType.toLowerCase().includes(rideType.toLowerCase())
+        );
+      }
+
+      // Client-side sorting for ETA or Fare
+      if (sortBy === 'eta') {
+        data.sort((a, b) => a.etaMinutes - b.etaMinutes);
+      } else if (sortBy === 'fare') {
+        data.sort((a, b) => a.fare.amount - b.fare.amount);
+      }
+
       setRides(data);
     } catch (err) {
       console.error('Failed to fetch ride estimates:', err);
@@ -93,7 +109,9 @@ const PollingStationLocator = () => {
             <Form.Select value={pickupId} onChange={(e) => setPickupId(e.target.value)} required>
               <option value="">Select a landmark…</option>
               {landmarks.map((l) => (
-                <option key={l.id} value={l.id}>{l.name}</option>
+                <option key={l.id} value={l.id}>
+                  {l.name ? l.name.charAt(0).toUpperCase() + l.name.slice(1) : l.id}
+                </option>
               ))}
             </Form.Select>
           </Col>
@@ -102,7 +120,9 @@ const PollingStationLocator = () => {
             <Form.Select value={dropoffId} onChange={(e) => setDropoffId(e.target.value)} required>
               <option value="">Select a landmark…</option>
               {landmarks.map((l) => (
-                <option key={l.id} value={l.id}>{l.name}</option>
+                <option key={l.id} value={l.id}>
+                  {l.name ? l.name.charAt(0).toUpperCase() + l.name.slice(1) : l.id}
+                </option>
               ))}
             </Form.Select>
           </Col>

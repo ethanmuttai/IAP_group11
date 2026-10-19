@@ -1,7 +1,8 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
 const Database = require('better-sqlite3');
-const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -106,6 +107,56 @@ app.post('/api/candidates/:candidateId/reviews', (req, res) => {
 
   const newReview = db.prepare('SELECT * FROM reviews WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(newReview);
+});
+
+// GET /api/transport/landmarks -> Partner Integration (Group 10)
+app.get('/api/transport/landmarks', async (req, res) => {
+  try {
+    const partnerUrl = `${process.env.PARTNER_URL}/landmarks`;
+    const response = await fetch(partnerUrl);
+
+    if (!response.ok) {
+      console.error('Group 10 Landmarks API status:', response.status);
+      return res.status(502).json({ message: 'Landmark data unavailable' });
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error('Landmarks partner call failed:', err.message);
+    res.status(502).json({ message: 'Landmark data unavailable' });
+  }
+});
+
+// GET /api/transport/rides -> Partner Integration (Group 10)
+app.get('/api/transport/rides', async (req, res) => {
+  try {
+    const { pickup_lat, pickup_lng, dropoff_lat, dropoff_lng } = req.query;
+
+    const lat1 = pickup_lat || -1.2864;
+    const lng1 = pickup_lng || 36.8172;
+    const lat2 = dropoff_lat || -1.3197;
+    const lng2 = dropoff_lng || 36.8271;
+
+    const partnerUrl = `${process.env.PARTNER_URL}/rides?pickup_lat=${lat1}&pickup_lng=${lng1}&dropoff_lat=${lat2}&dropoff_lng=${lng2}`;
+
+    const response = await fetch(partnerUrl);
+
+    if (!response.ok) {
+      console.error('Group 10 API returned status:', response.status);
+      return res.status(502).json({ message: 'Partner data unavailable' });
+    }
+
+    const data = await response.json();
+    
+    // Filter out parcel options with capacity 0
+    const passengerRides = data.filter(ride => ride.capacity > 0);
+
+    res.json(passengerRides);
+  } catch (err) {
+    console.error('Partner call failed:', err.message);
+    res.status(502).json({ message: 'Partner data unavailable' });
+  }
 });
 
 // Unknown routes -> contract-shaped 404
