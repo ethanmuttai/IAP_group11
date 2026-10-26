@@ -11,13 +11,28 @@ const Home = () => {
   const [candidates, setCandidates] = useState([]);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/candidates`)
+    fetch(`${API_BASE}/api/candidates`, {
+      headers: {
+        'X-API-Key': 'voter_fs_secret_key_2026_99x'
+      }
+    })
       .then(res => res.json())
-      .then(data => setCandidates(data))
-      .catch(err => console.error('Failed to load candidates:', err));
+      .then(data => {
+        if (Array.isArray(data)) {
+          setCandidates(data);
+        } else {
+          console.error('API returned non-array response:', data);
+          setCandidates([]);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load candidates:', err);
+        setCandidates([]);
+      });
   }, []);
 
-  const featured = candidates.slice(0, 4);
+  // Safe array slice guard to prevent runtime crashes
+  const featured = Array.isArray(candidates) ? candidates.slice(0, 4) : [];
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
