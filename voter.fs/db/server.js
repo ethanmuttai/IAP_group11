@@ -10,6 +10,55 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// 1. Load keys from process.env.API_KEYS (comma-separated for multiple consumers)
+const VALID_KEYS = (process.env.API_KEYS || process.env.MY_API_KEY || '').split(',').map(k => k.trim()).filter(Boolean);
+
+// Auth Middleware: Enforce X-API-Key on ALL endpoints
+function requireApiKey(req, res, next) {
+  const key = req.get('X-API-Key');
+
+  if (!key || !VALID_KEYS.includes(key)) {
+    return sendError(res, 401, 'UNAUTHORIZED', 'Missing or invalid API key');
+  }
+
+  req.apiKey = key;
+  next();
+}
+
+// 2. In-Memory Rate Limiter Middleware (Part C)
+function rateLimit({ windowMs, max }) {
+  const hits = new Map();
+
+  return (req, res, next) => {
+    const id = req.apiKey || req.ip;
+    const now = Date.now();
+    let entry = hits.get(id);
+
+    if (!entry || now >= entry.resetAt) {
+      entry = { count: 0, resetAt: now + windowMs };
+      hits.set(id, entry);
+    }
+
+    entry.count += 1;
+
+    if (entry.count > max) {
+      const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+      res.set('Retry-After', String(retryAfter));
+      return res.status(429).json({
+        code: 'TOO_MANY_REQUESTS',
+        message: 'Too many requests',
+        retryAfter
+      });
+    }
+
+    next();
+  };
+}
+
+// REGISTER SECURITY MIDDLEWARES BEFORE ALL ROUTES
+app.use(requireApiKey);
+app.use(rateLimit({ windowMs: 60000, max: 100 })); // 100 requests per minute per key
+
 const db = new Database(path.join(__dirname, 'voter.db'));
 
 // Every error follows the contract's Error schema: { code, message }
@@ -50,7 +99,6 @@ app.get('/api/candidates/:candidateId', (req, res) => {
 app.get('/api/candidates/:candidateId/reviews', (req, res) => {
   const id = req.params.candidateId;
 
-  // Validate minRating first (400), then candidate (404)
   let minRating = 1;
   if (req.query.minRating !== undefined) {
     const raw = String(req.query.minRating);
@@ -113,7 +161,12 @@ app.post('/api/candidates/:candidateId/reviews', (req, res) => {
 app.get('/api/transport/landmarks', async (req, res) => {
   try {
     const partnerUrl = `${process.env.PARTNER_URL}/landmarks`;
-    const response = await fetch(partnerUrl);
+    const response = await fetch(partnerUrl, {
+      headers: {
+        'X-API-Key': process.env.PARTNER_API_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
 
     if (!response.ok) {
       console.error('Group 10 Landmarks API status:', response.status);
@@ -140,7 +193,12 @@ app.get('/api/transport/rides', async (req, res) => {
 
     const partnerUrl = `${process.env.PARTNER_URL}/rides?pickup_lat=${lat1}&pickup_lng=${lng1}&dropoff_lat=${lat2}&dropoff_lng=${lng2}`;
 
-    const response = await fetch(partnerUrl);
+    const response = await fetch(partnerUrl, {
+      headers: {
+        'X-API-Key': process.env.PARTNER_API_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
 
     if (!response.ok) {
       console.error('Group 10 API returned status:', response.status);
@@ -148,10 +206,7 @@ app.get('/api/transport/rides', async (req, res) => {
     }
 
     const data = await response.json();
-    
-    // Filter out parcel options with capacity 0
     const passengerRides = data.filter(ride => ride.capacity > 0);
-
     res.json(passengerRides);
   } catch (err) {
     console.error('Partner call failed:', err.message);
@@ -164,7 +219,7 @@ app.use((req, res) => {
   sendError(res, 404, 'NOT_FOUND', 'Route not found');
 });
 
-// Safety net: malformed JSON -> 400, anything else -> 500, always { code, message }
+// Safety net: malformed JSON -> 400, anything else -> 500
 app.use((err, req, res, next) => {
   if (err.type === 'entity.parse.failed') {
     return sendError(res, 400, 'INVALID_REVIEW', 'Request body is not valid JSON');
@@ -173,7 +228,6 @@ app.use((err, req, res, next) => {
   sendError(res, 500, 'INTERNAL_ERROR', 'Something went wrong');
 });
 
-// Only listen when run directly (lets Jest/supertest import the app)
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
