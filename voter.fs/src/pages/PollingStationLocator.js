@@ -121,7 +121,7 @@ const PollingStationLocator = () => {
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center mb-2">
           <h6 className="fw-bold mb-0 text-secondary text-uppercase small">
-            Upcoming Civic Events & Rallies (Upstream Data Feed)
+            Upcoming Civic Events & Rallies
           </h6>
           <Badge bg="light" text="dark" className="border fw-normal">
             {rallies.length} Active Events
