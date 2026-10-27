@@ -214,7 +214,87 @@ app.get('/api/transport/rides', async (req, res) => {
   }
 });
 
-// Unknown routes -> contract-shaped 404
+// GET /api/rallies -> Raw civic event feed for Group 12 (Accessibility / Traffic tracking)
+app.get('/api/rallies', (req, res) => {
+  const rallies = [
+    {
+      id: "rally_01",
+      title: "Youth Civic Mobilization Rally",
+      organizer: "Civic Action Kenya",
+      venue: "Kamukunji Grounds",
+      location: { lat: -1.2864, lng: 36.8372 },
+      date: "2026-10-28",
+      startTime: "13:00",
+      endTime: "18:00",
+      expectedCrowd: "5,000+",
+      eventType: "Outdoor Mega Rally"
+    },
+    {
+      id: "rally_02",
+      title: "Townhall on Electoral Accountability",
+      organizer: "Youth Decides 2026",
+      venue: "Ufungamano House",
+      location: { lat: -1.2789, lng: 36.8163 },
+      date: "2026-10-29",
+      startTime: "10:00",
+      endTime: "13:00",
+      expectedCrowd: "500",
+      eventType: "Indoor Hall / Civic Dialogue"
+    },
+    {
+      id: "rally_03",
+      title: "Nairobi West Civic Engagement Forum",
+      organizer: "Nairobi Voters Alliance",
+      venue: "Nyayo National Stadium Parking Grounds",
+      location: { lat: -1.3061, lng: 36.8228 },
+      date: "2026-10-30",
+      startTime: "14:00",
+      endTime: "17:00",
+      expectedCrowd: "3,500",
+      eventType: "Outdoor Gathering"
+    },
+    {
+      id: "rally_04",
+      title: "Lang'ata Constituency Voters Assembly",
+      organizer: "Lang'ata Civic Initiative",
+      venue: "Carnivore Grounds (Open Field)",
+      location: { lat: -1.3255, lng: 36.8021 },
+      date: "2026-10-31",
+      startTime: "11:00",
+      endTime: "16:00",
+      expectedCrowd: "2,000",
+      eventType: "Constituency Rally"
+    },
+    {
+      id: "rally_05",
+      title: "Kibra Community Legal Aid & Voter Awareness",
+      organizer: "Haki Jamii Forum",
+      venue: "Woodley Grounds",
+      location: { lat: -1.3117, lng: 36.7842 },
+      date: "2026-11-01",
+      startTime: "09:30",
+      endTime: "14:30",
+      expectedCrowd: "1,200",
+      eventType: "Community Meeting"
+    },
+    {
+      id: "rally_06",
+      title: "Embakasi East Civic Sensitization Forum",
+      organizer: "Eastlands Youth Voice",
+      venue: "Jacaranda Grounds",
+      location: { lat: -1.2912, lng: 36.8967 },
+      date: "2026-11-02",
+      startTime: "12:00",
+      endTime: "17:30",
+      expectedCrowd: "8,000+",
+      eventType: "Outdoor Mega Rally"
+    }
+  ];
+
+  res.json(rallies);
+});
+
+// Unknown routes -> contract-shaped 404 (MUST remain below all declared routes)
 app.use((req, res) => {
   sendError(res, 404, 'NOT_FOUND', 'Route not found');
 });

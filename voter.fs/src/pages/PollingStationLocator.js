@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Button, Table, Alert, Row, Col } from 'react-bootstrap';
+import { Container, Form, Button, Table, Alert, Row, Col, Card, Badge, Spinner } from 'react-bootstrap';
 import SectionHeader from '../components/SectionHeader';
 
 // Point directly to your local Express backend proxy running on port 5000
@@ -19,7 +19,12 @@ const PollingStationLocator = () => {
   const [searchError, setSearchError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
 
-  // Fetch landmarks via backend proxy on component mount
+  // State for Downstream Partner (Group 12) Rallies Feed
+  const [rallies, setRallies] = useState([]);
+  const [ralliesLoading, setRalliesLoading] = useState(true);
+  const [ralliesError, setRalliesError] = useState('');
+
+  // Fetch landmarks and rally events on component mount
   useEffect(() => {
     fetch(`${API_BASE}/landmarks`)
       .then((res) => {
@@ -33,6 +38,22 @@ const PollingStationLocator = () => {
       .catch((err) => {
         console.error('Failed to load landmarks from proxy:', err);
         setLandmarksError(true);
+      });
+
+    // Fetch rallies from our local backend endpoint
+    fetch('http://localhost:5000/api/rallies')
+      .then((res) => {
+        if (!res.ok) throw new Error('Could not load rally data');
+        return res.json();
+      })
+      .then((data) => {
+        setRallies(data);
+        setRalliesLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to load rallies:', err);
+        setRalliesError('Unable to load upcoming event alerts right now.');
+        setRalliesLoading(false);
       });
   }, []);
 
@@ -95,6 +116,54 @@ const PollingStationLocator = () => {
         title="Polling station locator"
         description="Pick your location and your polling station to compare ride fares and ETAs before you leave home."
       />
+
+      {/* Downstream Partner (Group 12) Live Rally & Event Feed */}
+      <div className="mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <h6 className="fw-bold mb-0 text-secondary text-uppercase small">
+            Upcoming Civic Events & Rallies (Upstream Data Feed)
+          </h6>
+          <Badge bg="light" text="dark" className="border fw-normal">
+            {rallies.length} Active Events
+          </Badge>
+        </div>
+
+        {ralliesLoading ? (
+          <div className="p-3 bg-white border rounded-4 text-center small text-muted">
+            <Spinner animation="border" size="sm" variant="success" className="me-2" />
+            Loading upcoming civic events...
+          </div>
+        ) : ralliesError ? (
+          <Alert variant="light" className="border text-muted small">{ralliesError}</Alert>
+        ) : (
+          <Row className="g-2">
+            {rallies.map((rally) => (
+              <Col md={6} key={rally.id}>
+                <Card className="border rounded-3 shadow-none bg-light h-100">
+                  <Card.Body className="p-3 d-flex flex-column justify-content-between">
+                    <div>
+                      <div className="d-flex justify-content-between align-items-start mb-1">
+                        <strong className="text-dark small">{rally.title}</strong>
+                        <Badge bg="secondary" className="small fw-normal">
+                          {rally.eventType}
+                        </Badge>
+                      </div>
+                      <div className="text-muted small">
+                        📍 {rally.venue} <br />
+                        🏛️ {rally.organizer}
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-between small text-secondary border-top pt-2 mt-2">
+                      <span>📅 {rally.date} ({rally.startTime} - {rally.endTime})</span>
+                      <span>👥 ~{rally.expectedCrowd}</span>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        )}
+      </div>
 
       {landmarksError && (
         <Alert variant="warning">
