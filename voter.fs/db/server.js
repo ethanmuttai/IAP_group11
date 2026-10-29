@@ -13,19 +13,8 @@ app.use(express.json());
 // 1. Load keys from process.env.API_KEYS (comma-separated for multiple consumers)
 const VALID_KEYS = (process.env.API_KEYS || process.env.MY_API_KEY || '').split(',').map(k => k.trim()).filter(Boolean);
 
-// Auth Middleware: Enforce X-API-Key on protected endpoints, whitelist public routes
+// Auth Middleware: Enforce X-API-Key on ALL endpoints (No exceptions per lab rubric)
 function requireApiKey(req, res, next) {
-  const publicPaths = [
-    '/api/candidates',
-    '/api/rallies',
-    '/api/transport/landmarks',
-    '/api/transport/rides'
-  ];
-
-  if (publicPaths.some(path => req.path.startsWith(path))) {
-    return next();
-  }
-
   const key = req.get('X-API-Key');
 
   if (!key || !VALID_KEYS.includes(key)) {
