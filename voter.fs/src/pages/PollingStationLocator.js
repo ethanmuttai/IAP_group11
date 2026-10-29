@@ -5,6 +5,12 @@ import SectionHeader from '../components/SectionHeader';
 // Point directly to your local Express backend proxy running on port 5000
 const API_BASE = 'http://localhost:5000/api/transport';
 
+// Your team's API key
+const API_HEADERS = {
+  'Content-Type': 'application/json',
+  'X-API-Key': 'cd4eb67fbb67b76473b4e323b3b53b573c43735a5f197b36'
+};
+
 const PollingStationLocator = () => {
   const [landmarks, setLandmarks] = useState([]);
   const [landmarksError, setLandmarksError] = useState(false);
@@ -26,7 +32,9 @@ const PollingStationLocator = () => {
 
   // Fetch landmarks and rally events on component mount
   useEffect(() => {
-    fetch(`${API_BASE}/landmarks`)
+    fetch(`${API_BASE}/landmarks`, {
+      headers: API_HEADERS
+    })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch landmarks');
         return res.json();
@@ -41,7 +49,9 @@ const PollingStationLocator = () => {
       });
 
     // Fetch rallies from our local backend endpoint
-    fetch('http://localhost:5000/api/rallies')
+    fetch('http://localhost:5000/api/rallies', {
+      headers: API_HEADERS
+    })
       .then((res) => {
         if (!res.ok) throw new Error('Could not load rally data');
         return res.json();
@@ -78,7 +88,9 @@ const PollingStationLocator = () => {
     });
 
     try {
-      const res = await fetch(`${API_BASE}/rides?${params.toString()}`);
+      const res = await fetch(`${API_BASE}/rides?${params.toString()}`, {
+        headers: API_HEADERS
+      });
       if (!res.ok) {
         const errBody = await res.json().catch(() => null);
         throw new Error(errBody?.message || 'Could not fetch ride estimates.');
