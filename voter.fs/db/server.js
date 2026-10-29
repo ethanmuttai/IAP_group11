@@ -13,7 +13,7 @@ app.use(express.json());
 // 1. Load keys from process.env.API_KEYS (comma-separated for multiple consumers)
 const VALID_KEYS = (process.env.API_KEYS || process.env.MY_API_KEY || '').split(',').map(k => k.trim()).filter(Boolean);
 
-// Auth Middleware: Enforce X-API-Key on ALL endpoints
+// Auth Middleware: Enforce X-API-Key on protected endpoints, whitelist public routes
 function requireApiKey(req, res, next) {
   const publicPaths = [
     '/api/candidates',
@@ -25,6 +25,7 @@ function requireApiKey(req, res, next) {
   if (publicPaths.some(path => req.path.startsWith(path))) {
     return next();
   }
+
   const key = req.get('X-API-Key');
 
   if (!key || !VALID_KEYS.includes(key)) {
@@ -35,7 +36,7 @@ function requireApiKey(req, res, next) {
   next();
 }
 
-// 2. In-Memory Rate Limiter Middleware (Part C)
+// 2. In-Memory Rate Limiter Middleware
 function rateLimit({ windowMs, max }) {
   const hits = new Map();
 
@@ -229,75 +230,101 @@ app.get('/api/rallies', (req, res) => {
   const rallies = [
     {
       id: "rally_01",
-      title: "Youth Civic Mobilization Rally",
-      organizer: "Civic Action Kenya",
-      venue: "Kamukunji Grounds",
-      location: { lat: -1.2864, lng: 36.8372 },
-      date: "2026-10-28",
-      startTime: "13:00",
-      endTime: "18:00",
-      expectedCrowd: "5,000+",
-      eventType: "Outdoor Mega Rally"
+      title: "Universal Healthcare Delivery & Medical Workers Forum",
+      organizer: "United Democratic Alliance (UDA) Presidential Secretariat",
+      candidate: "H.E. Dr. William Ruto",
+      party: "United Democratic Alliance (UDA)",
+      venue: "Kenyatta National Hospital (KMTC Grounds)",
+      location: { lat: -1.3005, lng: 36.8073 },
+      date: "2026-11-02",
+      startTime: "14:00",
+      endTime: "17:00",
+      expectedCrowd: "6,000+",
+      eventType: "Presidential Townhall & Policy Address"
     },
     {
       id: "rally_02",
-      title: "Townhall on Electoral Accountability",
-      organizer: "Youth Decides 2026",
-      venue: "Ufungamano House",
-      location: { lat: -1.2789, lng: 36.8163 },
-      date: "2026-10-29",
+      title: "Civil Service & Public Sector Management Keynote",
+      organizer: "Jubilee / United Progressive Alliance Presidential Campaign",
+      candidate: "Dr. Fred Matiang'i",
+      party: "United Progressive Alliance / Jubilee Coalition",
+      venue: "The Nairobi Hospital (Argwings Kodhek Grounds)",
+      location: { lat: -1.2965, lng: 36.8041 },
+      date: "2026-11-03",
       startTime: "10:00",
-      endTime: "13:00",
-      expectedCrowd: "500",
-      eventType: "Indoor Hall / Civic Dialogue"
+      endTime: "12:30",
+      expectedCrowd: "1,500",
+      eventType: "Civic Dialogue & Policy Address"
     },
     {
       id: "rally_03",
-      title: "Nairobi West Civic Engagement Forum",
-      organizer: "Nairobi Voters Alliance",
-      venue: "Nyayo National Stadium Parking Grounds",
-      location: { lat: -1.3061, lng: 36.8228 },
-      date: "2026-10-30",
-      startTime: "14:00",
-      endTime: "17:00",
-      expectedCrowd: "3,500",
-      eventType: "Outdoor Gathering"
+      title: "Rule of Law, Constitutional Integrity & Higher Education Charter",
+      organizer: "National Integrity Secretariat & Civic Alliance",
+      candidate: "Justice (Rtd) David Maraga",
+      party: "Constitutional Integrity Alliance",
+      venue: "Aga Khan University Hospital (Parklands)",
+      location: { lat: -1.2618, lng: 36.8229 },
+      date: "2026-11-04",
+      startTime: "15:00",
+      endTime: "18:00",
+      expectedCrowd: "2,000",
+      eventType: "Academic Townhall & Public Lecture"
     },
     {
       id: "rally_04",
-      title: "Lang'ata Constituency Voters Assembly",
-      organizer: "Lang'ata Civic Initiative",
-      venue: "Carnivore Grounds (Open Field)",
-      location: { lat: -1.3255, lng: 36.8021 },
-      date: "2026-10-31",
+      title: "Devolution Strengthening & Senior Citizens Welfare Address",
+      organizer: "Wiper Democratic Movement National Secretariat",
+      candidate: "H.E. Kalonzo Musyoka",
+      party: "Wiper Democratic Movement / Ukombozi Alliance",
+      venue: "The Karen Hospital (Karen Road)",
+      location: { lat: -1.3328, lng: 36.7198 },
+      date: "2026-11-05",
       startTime: "11:00",
-      endTime: "16:00",
-      expectedCrowd: "2,000",
-      eventType: "Constituency Rally"
+      endTime: "13:30",
+      expectedCrowd: "1,000",
+      eventType: "Community Engagement & Party Delegates Meeting"
     },
     {
       id: "rally_05",
-      title: "Kibra Community Legal Aid & Voter Awareness",
-      organizer: "Haki Jamii Forum",
-      venue: "Woodley Grounds",
-      location: { lat: -1.3117, lng: 36.7842 },
-      date: "2026-11-01",
+      title: "Child Welfare, Public Health Accountability & Human Rights Dialogue",
+      organizer: "Defenders of the Constitution Secretariat",
+      candidate: "Sen. Okiya Omtatah Okoiti",
+      party: "Social Justice Coalition",
+      venue: "Gertrude's Children's Hospital (Muthaiga)",
+      location: { lat: -1.2581, lng: 36.8361 },
+      date: "2026-11-06",
       startTime: "09:30",
-      endTime: "14:30",
-      expectedCrowd: "1,200",
-      eventType: "Community Meeting"
+      endTime: "12:00",
+      expectedCrowd: "800",
+      eventType: "Public Interest Roundtable"
     },
     {
       id: "rally_06",
-      title: "Embakasi East Civic Sensitization Forum",
-      organizer: "Eastlands Youth Voice",
-      venue: "Jacaranda Grounds",
-      location: { lat: -1.2912, lng: 36.8967 },
-      date: "2026-11-02",
-      startTime: "12:00",
+      title: "Private Sector Growth, Sports Infrastructure & Youth Enterprise Summit",
+      organizer: "People's Dialogue Forum & Business Coalition",
+      candidate: "United Opposition Consultative Secretariat",
+      party: "United Opposition Platform",
+      venue: "Parklands Sports Club (Ojijo Road)",
+      location: { lat: -1.2673, lng: 36.8142 },
+      date: "2026-11-07",
+      startTime: "16:00",
+      endTime: "19:00",
+      expectedCrowd: "2,500",
+      eventType: "Economic Keynote & Business Assembly"
+    },
+    {
+      id: "rally_07",
+      title: "National Presidential Final Pitch & Mega Civic Mobilization",
+      organizer: "Consortium of Registered Political Parties & Civic Engagement Forum",
+      candidate: "Presidential Candidates Joint Civic Appearance",
+      party: "Multi-Party Civic Initiative",
+      venue: "Nyayo National Stadium",
+      location: { lat: -1.3039, lng: 36.8242 },
+      date: "2026-11-08",
+      startTime: "10:30",
       endTime: "17:30",
-      expectedCrowd: "8,000+",
-      eventType: "Outdoor Mega Rally"
+      expectedCrowd: "40,000+",
+      eventType: "National Mega Campaign Rally"
     }
   ];
 
