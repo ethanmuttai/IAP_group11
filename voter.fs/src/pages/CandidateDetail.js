@@ -5,6 +5,11 @@ import ReviewSection from '../components/ReviewSection';
 
 const API_BASE = 'http://localhost:5000';
 
+const API_HEADERS = {
+  'Content-Type': 'application/json',
+  'X-API-Key': 'cd4eb67fbb67b76473b4e323b3b53b573c43735a5f197b36'
+};
+
 const CandidateDetail = () => {
   const { id } = useParams();
   const [candidate, setCandidate] = useState(null);
@@ -14,7 +19,9 @@ const CandidateDetail = () => {
     setCandidate(null);
     setNotFound(false);
 
-    fetch(`${API_BASE}/api/candidates/${id}`)
+    fetch(`${API_BASE}/api/candidates/${id}`, {
+      headers: API_HEADERS
+    })
       .then(res => {
         if (!res.ok) throw new Error('Not found');
         return res.json();

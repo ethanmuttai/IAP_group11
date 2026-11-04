@@ -5,19 +5,38 @@ import { Container, Form, Row, Col } from 'react-bootstrap';
 
 const API_BASE = 'http://localhost:5000';
 
+const API_HEADERS = {
+  'Content-Type': 'application/json',
+  'X-API-Key': 'cd4eb67fbb67b76473b4e323b3b53b573c43735a5f197b36'
+};
+
 const Candidates = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [candidates, setCandidates] = useState([]);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/candidates`)
-      .then(res => res.json())
-      .then(data => setCandidates(data))
-      .catch(err => console.error('Failed to load candidates:', err));
+    fetch(`${API_BASE}/api/candidates`, {
+      headers: API_HEADERS
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load candidates');
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setCandidates(data);
+        } else {
+          setCandidates([]);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load candidates:', err);
+        setCandidates([]);
+      });
   }, []);
 
   const filteredCandidates = candidates.filter((c) =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (c.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     (c.party || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 

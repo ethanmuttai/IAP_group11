@@ -13,7 +13,7 @@ const Home = () => {
   useEffect(() => {
     fetch(`${API_BASE}/api/candidates`, {
       headers: {
-        'X-API-Key': 'voter_fs_secret_key_2026_99x'
+        'X-API-Key': 'cd4eb67fbb67b76473b4e323b3b53b573c43735a5f197b36'
       }
     })
       .then(res => res.json())

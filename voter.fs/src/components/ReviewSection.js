@@ -2,21 +2,36 @@ import React, { useState, useEffect } from 'react';
 
 const API_BASE = 'http://localhost:5000';
 
-const ReviewSection = ({ candidateId }) => {
+const API_HEADERS = {
+  'Content-Type': 'application/json',
+  'X-API-Key': 'cd4eb67fbb67b76473b4e323b3b53b573c43735a5f197b36'
+};
 
+const ReviewSection = ({ candidateId }) => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState("");
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
 
-  // Runs once when the page loads (and again if candidateId changes) —
-  // fetches the REAL saved reviews from the server instead of starting
-  // with a hardcoded array.
   useEffect(() => {
-    fetch(`${API_BASE}/api/candidates/${candidateId}/reviews`)
-      .then(res => res.json())
-      .then(data => setReviews(data))
-      .catch(err => console.error('Failed to load reviews:', err));
+    fetch(`${API_BASE}/api/candidates/${candidateId}/reviews`, {
+      headers: API_HEADERS
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load reviews');
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setReviews(data);
+        } else {
+          setReviews([]);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load reviews:', err);
+        setReviews([]);
+      });
   }, [candidateId]);
 
   const handleSubmit = async (e) => {
@@ -26,7 +41,7 @@ const ReviewSection = ({ candidateId }) => {
     try {
       const res = await fetch(`${API_BASE}/api/candidates/${candidateId}/reviews`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: API_HEADERS,
         body: JSON.stringify({
           user: 'Verified User',
           rating: rating,
@@ -34,9 +49,13 @@ const ReviewSection = ({ candidateId }) => {
         })
       });
 
+      if (!res.ok) {
+        throw new Error('Failed to save review');
+      }
+
       const savedReview = await res.json();
 
-      // Add the server's saved copy (with its real id/date) to the top of the list
+      // Add the server's saved copy to the top of the list
       setReviews([savedReview, ...reviews]);
       setNewReview("");
       setRating(0);
@@ -98,20 +117,24 @@ const ReviewSection = ({ candidateId }) => {
       </form>
 
       <div className="review-feed-list d-flex flex-column gap-3">
-        {reviews.map((rev) => (
-          <div key={rev.id} className="review-card-item pb-3" style={{ borderBottom: '1px dashed #edebe9' }}>
-            <div className="d-flex justify-content-between align-items-center mb-1">
-              <span className="small fw-bold text-dark">{rev.user}</span>
-              <span className="text-muted" style={{ fontSize: '0.78rem' }}>{rev.date}</span>
+        {reviews.length === 0 ? (
+          <p className="text-muted small">No review logs recorded yet for this candidate.</p>
+        ) : (
+          reviews.map((rev) => (
+            <div key={rev.id} className="review-card-item pb-3" style={{ borderBottom: '1px dashed #edebe9' }}>
+              <div className="d-flex justify-content-between align-items-center mb-1">
+                <span className="small fw-bold text-dark">{rev.user}</span>
+                <span className="text-muted" style={{ fontSize: '0.78rem' }}>{rev.date}</span>
+              </div>
+              <div className="small mb-2" style={{ color: '#5B7053' }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span key={star}>{star <= rev.rating ? '★' : '☆'}</span>
+                ))}
+              </div>
+              <p className="text-secondary m-0 small" style={{ lineHeight: '1.5' }}>{rev.text}</p>
             </div>
-            <div className="small mb-2" style={{ color: '#5B7053' }}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span key={star}>{star <= rev.rating ? '★' : '☆'}</span>
-              ))}
-            </div>
-            <p className="text-secondary m-0 small" style={{ lineHeight: '1.5' }}>{rev.text}</p>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
