@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Table, Alert, Row, Col, Card, Badge, Spinner } from 'react-bootstrap';
 import SectionHeader from '../components/SectionHeader';
 
-// Point directly to your local Express backend proxy running on port 5000
 const API_BASE = 'http://localhost:5000/api/transport';
 
-// Your team's API key
 const API_HEADERS = {
   'Content-Type': 'application/json',
   'X-API-Key': 'cd4eb67fbb67b76473b4e323b3b53b573c43735a5f197b36'
@@ -14,6 +12,7 @@ const API_HEADERS = {
 const PollingStationLocator = () => {
   const [landmarks, setLandmarks] = useState([]);
   const [landmarksError, setLandmarksError] = useState(false);
+  const [fallbackInfo, setFallbackInfo] = useState(null); // { stale: boolean, time: string }
 
   const [pickupId, setPickupId] = useState('');
   const [dropoffId, setDropoffId] = useState('');
@@ -39,9 +38,18 @@ const PollingStationLocator = () => {
         if (!res.ok) throw new Error('Failed to fetch landmarks');
         return res.json();
       })
-      .then((data) => {
-        setLandmarks(data);
+      .then((resData) => {
+        // Handle wrapped { data, stale, asof } or direct array
+        const list = Array.isArray(resData) ? resData : (resData.data || []);
+        setLandmarks(list);
         setLandmarksError(false);
+
+        if (resData.stale) {
+          const time = new Date(resData.asof).toLocaleTimeString();
+          setFallbackInfo({ stale: true, time });
+        } else {
+          setFallbackInfo(null);
+        }
       })
       .catch((err) => {
         console.error('Failed to load landmarks from proxy:', err);
@@ -57,7 +65,7 @@ const PollingStationLocator = () => {
         return res.json();
       })
       .then((data) => {
-        setRallies(data);
+        setRallies(Array.isArray(data) ? data : []);
         setRalliesLoading(false);
       })
       .catch((err) => {
@@ -71,7 +79,6 @@ const PollingStationLocator = () => {
     e.preventDefault();
     if (!pickupId || !dropoffId) return;
 
-    // String comparison handles both string and numeric IDs safely
     const pickup = landmarks.find((l) => String(l.id) === String(pickupId));
     const dropoff = landmarks.find((l) => String(l.id) === String(dropoffId));
     if (!pickup || !dropoff) return;
@@ -97,21 +104,19 @@ const PollingStationLocator = () => {
       }
       let data = await res.json();
 
-      // Client-side filtering for branded rideType strings (e.g., "Uber Chapchap", "Bolt Boda")
       if (rideType) {
         data = data.filter((r) =>
           r.rideType && r.rideType.toLowerCase().includes(rideType.toLowerCase())
         );
       }
 
-      // Client-side sorting for ETA or Fare
       if (sortBy === 'eta') {
         data.sort((a, b) => a.etaMinutes - b.etaMinutes);
       } else if (sortBy === 'fare') {
         data.sort((a, b) => a.fare.amount - b.fare.amount);
       }
 
-      setRides(data);
+      setRides(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to fetch ride estimates:', err);
       setSearchError(err.message);
@@ -177,7 +182,14 @@ const PollingStationLocator = () => {
         )}
       </div>
 
-      {landmarksError && (
+      {/* Saved Fallback Data Banner (Part D Rubric Requirement) */}
+      {fallbackInfo && fallbackInfo.stale && (
+        <Alert variant="warning" className="border shadow-sm mb-4">
+          ⚠️ <strong>Showing saved data from {fallbackInfo.time}.</strong> The partner is not responding.
+        </Alert>
+      )}
+
+      {landmarksError && !fallbackInfo && (
         <Alert variant="warning">
           Couldn't load the landmark list from RideCompare right now. Try again shortly.
         </Alert>

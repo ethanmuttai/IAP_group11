@@ -3,11 +3,16 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
 const Database = require('better-sqlite3');
+const { fetchWithRetry } = require('./resilientFetch');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'X-API-Key']
+}));
 app.use(express.json());
 
 // 1. Load keys from process.env.API_KEYS (comma-separated for multiple consumers)
@@ -157,27 +162,55 @@ app.post('/api/candidates/:candidateId/reviews', (req, res) => {
   res.status(201).json(newReview);
 });
 
-// GET /api/transport/landmarks -> Partner Integration (Group 10)
+// In-memory fallback cache for landmarks (Part D)
+let lastGoodLandmarks = null; // { data, asof }
+
+// GET /api/transport/landmarks -> Resilient Partner Integration with Fallback
 app.get('/api/transport/landmarks', async (req, res) => {
   try {
     const partnerUrl = `${process.env.PARTNER_URL}/landmarks`;
-    const response = await fetch(partnerUrl, {
-      headers: {
-        'X-API-Key': process.env.PARTNER_API_KEY,
-        'Content-Type': 'application/json'
-      }
-    });
+    const response = await fetchWithRetry(
+      partnerUrl,
+      {
+        headers: {
+          'X-API-Key': process.env.PARTNER_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      },
+      { timeoutMs: 1500, retries: 2, delayMs: 200 }
+    );
 
     if (!response.ok) {
-      console.error('Group 10 Landmarks API status:', response.status);
-      return res.status(502).json({ message: 'Landmark data unavailable' });
+      throw new Error(`Partner returned ${response.status}`);
     }
 
-    const data = await response.json();
-    res.json(data);
+    const landmarks = await response.json();
+
+    // Cache successful data in memory
+    lastGoodLandmarks = {
+      data: landmarks,
+      asof: new Date().toISOString()
+    };
+
+    return res.json({
+      data: landmarks,
+      stale: false,
+      asof: lastGoodLandmarks.asof
+    });
   } catch (err) {
-    console.error('Landmarks partner call failed:', err.message);
-    res.status(502).json({ message: 'Landmark data unavailable' });
+    const reason = err.name === 'TimeoutError' ? 'timeout' : (err.cause?.code || err.message);
+    console.error(`Landmarks partner call failed: ${reason}`);
+
+    // If we have cached data, return it with stale: true
+    if (lastGoodLandmarks) {
+      return res.json({
+        data: lastGoodLandmarks.data,
+        stale: true,
+        asof: lastGoodLandmarks.asof
+      });
+    }
+
+    return res.status(502).json({ message: 'Landmark data unavailable' });
   }
 });
 
@@ -193,12 +226,16 @@ app.get('/api/transport/rides', async (req, res) => {
 
     const partnerUrl = `${process.env.PARTNER_URL}/rides?pickup_lat=${lat1}&pickup_lng=${lng1}&dropoff_lat=${lat2}&dropoff_lng=${lng2}`;
 
-    const response = await fetch(partnerUrl, {
-      headers: {
-        'X-API-Key': process.env.PARTNER_API_KEY,
-        'Content-Type': 'application/json'
-      }
-    });
+    const response = await fetchWithRetry(
+      partnerUrl,
+      {
+        headers: {
+          'X-API-Key': process.env.PARTNER_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      },
+      { timeoutMs: 1500, retries: 2, delayMs: 200 }
+    );
 
     if (!response.ok) {
       console.error('Group 10 API returned status:', response.status);
@@ -206,15 +243,16 @@ app.get('/api/transport/rides', async (req, res) => {
     }
 
     const data = await response.json();
-    const passengerRides = data.filter(ride => ride.capacity > 0);
+    const passengerRides = (Array.isArray(data) ? data : []).filter(ride => ride.capacity > 0);
     res.json(passengerRides);
   } catch (err) {
-    console.error('Partner call failed:', err.message);
+    const reason = err.name === 'TimeoutError' ? 'timeout' : (err.cause?.code || err.message);
+    console.error('Partner call failed:', reason);
     res.status(502).json({ message: 'Partner data unavailable' });
   }
 });
 
-// GET /api/rallies -> Raw civic event feed for Group 12 (Accessibility / Traffic tracking)
+// GET /api/rallies -> Raw civic event feed for Group 12
 app.get('/api/rallies', (req, res) => {
   const rallies = [
     {
@@ -320,7 +358,7 @@ app.get('/api/rallies', (req, res) => {
   res.json(rallies);
 });
 
-// Unknown routes -> contract-shaped 404 (MUST remain below all declared routes)
+// Unknown routes -> contract-shaped 404
 app.use((req, res) => {
   sendError(res, 404, 'NOT_FOUND', 'Route not found');
 });
