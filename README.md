@@ -72,3 +72,52 @@ node db/init-db.js
 node db/server.js
 ```
 Runs at `http://localhost:5000`.
+
+## Monitoring & Observability (`/stats`)
+
+The backend exposes a runtime health and metrics endpoint protected by API authentication.
+
+- **Endpoint:** `GET /stats`
+- **Headers:** `X-API-Key: <your-api-key>`
+
+### Example Response:
+```json
+{
+  "startedAt": "2026-11-06T10:22:46.926Z",
+  "uptimeSeconds": 59,
+  "total": 60,
+  "clientErrors": 29,
+  "serverErrors": 0,
+  "errorRatePercent": 0,
+  "avgMs": 1.3,
+  "routes": {
+    "GET (no route)": {
+      "count": 25,
+      "clientErrors": 25,
+      "serverErrors": 0,
+      "avgMs": 0.9,
+      "maxMs": 6.2
+    },
+    "GET /api/candidates/:candidateId": {
+      "count": 13,
+      "clientErrors": 4,
+      "serverErrors": 0,
+      "avgMs": 1.8,
+      "maxMs": 3.8
+    },
+    "GET /api/rallies": {
+      "count": 6,
+      "clientErrors": 0,
+      "serverErrors": 0,
+      "avgMs": 1.1,
+      "maxMs": 1.5
+    },
+    "GET /api/candidates": {
+      "count": 16,
+      "clientErrors": 0,
+      "serverErrors": 0,
+      "avgMs": 1.6,
+      "maxMs": 2.3
+    }
+  }
+}

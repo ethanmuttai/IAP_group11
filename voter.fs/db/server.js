@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const Database = require('better-sqlite3');
 const { fetchWithRetry } = require('./resilientFetch');
+const { monitor, statsHandler } = require('./monitoring');
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,6 +17,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.use(monitor);
+
+// Security middlewares
+app.use(requireApiKey);
+app.use(rateLimit({ windowMs: 60000, max: 100 }));
+
+// GET /stats protected route
+app.get('/stats', statsHandler);
 // 1. Load keys from process.env.API_KEYS (comma-separated for multiple consumers)
 const VALID_KEYS = (process.env.API_KEYS || process.env.MY_API_KEY || '').split(',').map(k => k.trim()).filter(Boolean);
 
