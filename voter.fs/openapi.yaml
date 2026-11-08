@@ -6,7 +6,8 @@ info:
   description: >
     API exposed by Voter Edu to downstream partners for accessing candidate
     information, policy positions, and candidate reviews. The API supports
-    reading candidate information and creating reviews.
+    reading candidate information, creating reviews, and replacing existing
+    reviews.
 
 servers:
   - url: http://localhost:5000/api
@@ -198,6 +199,75 @@ paths:
               example:
                 code: "NOT_FOUND"
                 message: "Candidate not found"
+
+  /candidates/{candidateId}/reviews/{reviewId}:
+    put:
+      summary: Replace an existing review for a candidate
+      description: >
+        Full replacement. rating and text are required. If user is omitted it
+        resets to "Anonymous Voter". The original review date is kept.
+      parameters:
+        - name: candidateId
+          in: path
+          required: true
+          description: Unique identifier of the candidate the review belongs to
+          schema:
+            type: string
+            example: "ruto"
+
+        - name: reviewId
+          in: path
+          required: true
+          description: Unique identifier of the review to replace
+          schema:
+            type: integer
+            example: 2
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewRequest'
+            example:
+              user: "Verified User"
+              rating: 3
+              text: "Updated view after the debate."
+
+      responses:
+        '200':
+          description: Review replaced successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+              example:
+                id: 2
+                candidate_id: "ruto"
+                user: "Verified User"
+                rating: 3
+                text: "Updated view after the debate."
+                date: "2026-06-26"
+
+        '400':
+          description: Missing or invalid review information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "INVALID_REVIEW"
+                message: "rating and text are required"
+
+        '404':
+          description: No candidate exists with the given candidate ID, or no review with the given review ID exists for that candidate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "NOT_FOUND"
+                message: "Review not found"
 
 components:
   schemas:

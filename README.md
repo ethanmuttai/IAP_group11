@@ -48,6 +48,16 @@ curl -X POST https://iap-group11.onrender.com/api/candidates/maraga/reviews -H "
 {"id":4,"candidate_id":"maraga","user":"Wanjiku","rating":4,"text":"Clear plan on judicial reform.","date":"2026-10-19"}
 ```
 
+**PUT /api/candidates/:id/reviews/:reviewId** replaces an existing review. Body is the same as POST: `rating` (integer 1 to 5, required), `text` (non-empty string, required), `user` (string, optional, resets to "Anonymous Voter" if omitted). The review's original `date` is kept.
+```
+curl -X PUT https://iap-group11.onrender.com/api/candidates/maraga/reviews/4 -H "Content-Type: application/json" -d '{"user":"Wanjiku","rating":3,"text":"Updated view after the debate."}'
+```
+→ `200`
+```json
+{"id":4,"candidate_id":"maraga","user":"Wanjiku","rating":3,"text":"Updated view after the debate.","date":"2026-10-19"}
+```
+A review id that doesn't exist, or belongs to a different candidate, returns `404`.
+
 (Windows PowerShell users: use `curl.exe`, and put the JSON body in a file, then pass `--data-binary "@body.json"`.)
 
 ## Errors
@@ -58,7 +68,8 @@ Every error returns JSON in the form `{ "code": "...", "message": "..." }`.
 |---|---|---|
 | `GET /api/candidates/nobody` (unknown candidate, also on `/reviews` GET and POST) | 404 | `{ "code": "NOT_FOUND", "message": "Candidate not found" }` |
 | `GET .../reviews?minRating=abc` (not an integer from 1 to 5) | 400 | `{ "code": "INVALID_PARAMETER", "message": "minRating must be an integer between 1 and 5" }` |
-| POST missing `rating` or `text` | 400 | `{ "code": "INVALID_REVIEW", "message": "rating and text are required" }` |
+| `PUT .../reviews/999` (review not found for that candidate) | 404 | `{ "code": "NOT_FOUND", "message": "Review not found" }` |
+| POST or PUT missing `rating` or `text` | 400 | `{ "code": "INVALID_REVIEW", "message": "rating and text are required" }` |
 | POST with `rating` outside 1 to 5 or not an integer | 400 | `{ "code": "INVALID_REVIEW", "message": "rating must be an integer between 1 and 5" }` |
 
 ## Run locally
