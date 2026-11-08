@@ -157,6 +157,50 @@ app.post('/api/candidates/:candidateId/reviews', (req, res) => {
   res.status(201).json(newReview);
 });
 
+// PUT /api/candidates/:candidateId/reviews/:reviewId
+// Full replacement: rating and text are required, user resets to the default if omitted.
+// The original review date is kept.
+app.put('/api/candidates/:candidateId/reviews/:reviewId', (req, res) => {
+  const id = req.params.candidateId;
+
+  if (!candidateExists(id)) {
+    return sendError(res, 404, 'NOT_FOUND', 'Candidate not found');
+  }
+
+  const rawReviewId = req.params.reviewId;
+  const existing = /^\d+$/.test(rawReviewId)
+    ? db.prepare('SELECT * FROM reviews WHERE id = ? AND candidate_id = ?').get(Number(rawReviewId), id)
+    : undefined;
+
+  if (!existing) {
+    return sendError(res, 404, 'NOT_FOUND', 'Review not found');
+  }
+
+  const { user, rating, text } = req.body || {};
+
+  if (rating === undefined || rating === null || text === undefined || text === null) {
+    return sendError(res, 400, 'INVALID_REVIEW', 'rating and text are required');
+  }
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return sendError(res, 400, 'INVALID_REVIEW', 'rating must be an integer between 1 and 5');
+  }
+  if (typeof text !== 'string' || text.trim() === '') {
+    return sendError(res, 400, 'INVALID_REVIEW', 'text must be a non-empty string');
+  }
+  if (user !== undefined && user !== null && typeof user !== 'string') {
+    return sendError(res, 400, 'INVALID_REVIEW', 'user must be a string');
+  }
+
+  const reviewer = (typeof user === 'string' && user.trim()) ? user.trim() : 'Anonymous Voter';
+
+  db.prepare(`
+    UPDATE reviews SET user = ?, rating = ?, text = ? WHERE id = ?
+  `).run(reviewer, rating, text.trim(), existing.id);
+
+  const updated = db.prepare('SELECT * FROM reviews WHERE id = ?').get(existing.id);
+  res.json(updated);
+});
+
 // GET /api/transport/landmarks -> Partner Integration (Group 10)
 app.get('/api/transport/landmarks', async (req, res) => {
   try {
