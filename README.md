@@ -88,6 +88,24 @@ How the numbers are worked out:
 - **Alternative drop-off** is only offered for medium or high pressure: the nearest landmark between 0.4 km and 2 km from the venue, if rides there are at least 15% cheaper or 3 minutes quicker.
 - Rides with capacity 0 (for example parcel delivery) are ignored.
 
+**GET /api/polling-stations** returns our own list of polling stations, grouped by `area`. This is a team sample, not the official IEBC register: a station with `"verified": true` was copied from the IEBC polling station list, every other station has not been checked against it. `location` is approximate (one point per area, `locationApproximate` is `true`), not the school gate.
+```
+curl https://iap-group11.onrender.com/api/polling-stations -H "X-API-Key: YOUR_KEY"
+```
+→ `200`
+```json
+[{"id":"ps_001","name":"Westlands Primary School","area":"Westlands","county":"Nairobi City","constituency":"Westlands","ward":"Parklands/Highridge","location":{"lat":-1.2673,"lng":36.8118},"locationApproximate":true,"verified":true}]
+```
+
+**GET /api/polling-stations/:stationId/nearest-landmark** finds the Group 10 landmark nearest to a polling station. Group 10's `/rides` only understands its own landmarks, so the page requests ride prices for this landmark. The prices are for the landmark area, not the exact station. Returns `422` if no landmark is within 15 km, and uses the saved landmark list if Group 10 is briefly unreachable.
+```
+curl https://iap-group11.onrender.com/api/polling-stations/ps_001/nearest-landmark -H "X-API-Key: YOUR_KEY"
+```
+→ `200`
+```json
+{"station":{"id":"ps_001","name":"Westlands Primary School","area":"Westlands"},"landmark":{"id":"2","name":"westlands","location":{"lat":-1.2673,"lng":36.811}},"distanceKm":0.1}
+```
+
 (Windows PowerShell users: use `curl.exe`, and put the JSON body in a file, then pass `--data-binary "@body.json"`.)
 
 ## Errors
@@ -103,6 +121,9 @@ Every error returns JSON in the form `{ "code": "...", "message": "..." }`.
 | `GET .../travel` without `from` | 400 | `{ "code": "INVALID_PARAMETER", "message": "from (a landmark id) is required" }` |
 | `GET .../travel` for an event that has already ended | 409 | `{ "code": "EVENT_ENDED", "message": "This event has already ended" }` |
 | `GET .../travel` when Group 10 cannot be reached | 502 | `{ "message": "Partner data unavailable" }` |
+| `GET /api/polling-stations/ps_999/nearest-landmark` (unknown station) | 404 | `{ "code": "NOT_FOUND", "message": "Polling station not found" }` |
+| `GET .../nearest-landmark` when no landmark is within 15 km | 422 | `{ "code": "NO_NEARBY_LANDMARK", "message": "No ride landmark within 15 km of this polling station" }` |
+| `GET .../nearest-landmark` when Group 10 cannot be reached and nothing is saved | 502 | `{ "message": "Partner data unavailable" }` |
 | `PUT .../reviews/999` (review not found for that candidate) | 404 | `{ "code": "NOT_FOUND", "message": "Review not found" }` |
 | POST or PUT missing `rating` or `text` | 400 | `{ "code": "INVALID_REVIEW", "message": "rating and text are required" }` |
 | POST with `rating` outside 1 to 5 or not an integer | 400 | `{ "code": "INVALID_REVIEW", "message": "rating must be an integer between 1 and 5" }` |

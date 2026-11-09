@@ -463,8 +463,196 @@ paths:
               example:
                 message: "Partner data unavailable"
 
+  /polling-stations:
+    get:
+      summary: Return polling stations
+      description: >
+        Our own list of polling stations, grouped by area. This is a team
+        sample, not the official IEBC register: stations with verified true
+        were copied from the IEBC polling station list, all others have not
+        been checked against it. Coordinates are approximate (one point per
+        area), not the school gate.
+      responses:
+        '200':
+          description: A list of polling stations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PollingStation'
+              example:
+                - id: "ps_001"
+                  name: "Westlands Primary School"
+                  area: "Westlands"
+                  county: "Nairobi City"
+                  constituency: "Westlands"
+                  ward: "Parklands/Highridge"
+                  location:
+                    lat: -1.2673
+                    lng: 36.8118
+                  locationApproximate: true
+                  verified: true
+
+  /polling-stations/{stationId}/nearest-landmark:
+    get:
+      summary: Nearest Group 10 landmark to a polling station
+      description: >
+        Group 10's rides endpoint only understands its own landmarks, so to
+        compare ride prices to a polling station we find the landmark nearest
+        to it and request rides for that landmark. Prices are therefore for the
+        landmark area, not the exact station. Returns 422 when no landmark is
+        within 15 km. Uses the same saved landmark list as
+        GET /transport/landmarks if Group 10 is briefly unreachable.
+      parameters:
+        - name: stationId
+          in: path
+          required: true
+          description: Unique identifier of the polling station
+          schema:
+            type: string
+            example: "ps_001"
+
+      responses:
+        '200':
+          description: The nearest landmark
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NearestLandmark'
+              example:
+                station:
+                  id: "ps_001"
+                  name: "Westlands Primary School"
+                  area: "Westlands"
+                landmark:
+                  id: "2"
+                  name: "westlands"
+                  location:
+                    lat: -1.2673
+                    lng: 36.811
+                distanceKm: 0.1
+
+        '404':
+          description: No polling station exists with the given id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "NOT_FOUND"
+                message: "Polling station not found"
+
+        '422':
+          description: No landmark within 15 km of the polling station
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "NO_NEARBY_LANDMARK"
+                message: "No ride landmark within 15 km of this polling station"
+
+        '502':
+          description: Group 10's landmarks could not be reached and no saved copy exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: "Partner data unavailable"
+
 components:
   schemas:
+
+    PollingStation:
+      type: object
+      required:
+        - id
+        - name
+        - area
+        - location
+        - verified
+      properties:
+        id:
+          type: string
+          example: "ps_001"
+        name:
+          type: string
+          example: "Westlands Primary School"
+        area:
+          type: string
+          description: Neighbourhood the station is listed under
+          example: "Westlands"
+        county:
+          type: string
+          example: "Nairobi City"
+        constituency:
+          type: string
+          nullable: true
+          example: "Westlands"
+        ward:
+          type: string
+          nullable: true
+          example: "Parklands/Highridge"
+        location:
+          type: object
+          description: Approximate point for the area, not the school gate
+          properties:
+            lat:
+              type: number
+              example: -1.2673
+            lng:
+              type: number
+              example: 36.8118
+        locationApproximate:
+          type: boolean
+          example: true
+        verified:
+          type: boolean
+          description: true only if the name was copied from the IEBC polling station list
+          example: true
+
+    NearestLandmark:
+      type: object
+      properties:
+        station:
+          type: object
+          properties:
+            id:
+              type: string
+              example: "ps_001"
+            name:
+              type: string
+              example: "Westlands Primary School"
+            area:
+              type: string
+              example: "Westlands"
+        landmark:
+          type: object
+          properties:
+            id:
+              type: string
+              example: "2"
+            name:
+              type: string
+              example: "westlands"
+            location:
+              type: object
+              properties:
+                lat:
+                  type: number
+                  example: -1.2673
+                lng:
+                  type: number
+                  example: 36.811
+        distanceKm:
+          type: number
+          description: Straight-line distance from the station to the landmark
+          example: 0.1
 
     Candidate:
       type: object
