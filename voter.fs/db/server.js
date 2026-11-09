@@ -7,7 +7,6 @@ const { fetchWithRetry } = require('./resilientFetch');
 const { monitor, statsHandler } = require('./monitoring');
 const POLLING_STATIONS = require('./pollingStations');
 
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -18,18 +17,12 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// 1. MONITORING MUST RUN FIRST (captures all rejected 401s, 429s, and routes)
 app.use(monitor);
 
-// Security middlewares
-app.use(requireApiKey);
-app.use(rateLimit({ windowMs: 60000, max: 100 }));
-
-// GET /stats protected route
-app.get('/stats', statsHandler);
-// 1. Load keys from process.env.API_KEYS (comma-separated for multiple consumers)
+// 2. Auth Helper & Middleware
 const VALID_KEYS = (process.env.API_KEYS || process.env.MY_API_KEY || '').split(',').map(k => k.trim()).filter(Boolean);
 
-// Auth Middleware: Enforce X-API-Key on ALL endpoints (No exceptions per lab rubric)
 function requireApiKey(req, res, next) {
   const key = req.get('X-API-Key');
 
@@ -41,7 +34,7 @@ function requireApiKey(req, res, next) {
   next();
 }
 
-// 2. In-Memory Rate Limiter Middleware
+// 3. In-Memory Rate Limiter Middleware
 function rateLimit({ windowMs, max }) {
   const hits = new Map();
 
@@ -75,9 +68,26 @@ function rateLimit({ windowMs, max }) {
 app.use(requireApiKey);
 app.use(rateLimit({ windowMs: 60000, max: 100 })); // 100 requests per minute per key
 
+// GET /stats protected route
+app.get('/stats', statsHandler);
+
+// Database initialization
 const db = new Database(path.join(__dirname, 'voter.db'));
 
-// Every error follows the contract's Error schema: { code, message }
+// Table to store user feedback on rallies (atmosphere, safety, and physical accessibility)
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS rally_comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rally_id TEXT NOT NULL,
+    user TEXT NOT NULL,
+    comment TEXT NOT NULL,
+    accessible INTEGER NOT NULL DEFAULT 1, -- 1 for Yes, 0 for No
+    congestion_level TEXT NOT NULL,         -- 'Low', 'Medium', 'Extreme'
+    date TEXT NOT NULL
+  )
+`).run();
+
+// Error helper following contract schema: { code, message }
 function sendError(res, status, code, message) {
   return res.status(status).json({ code, message });
 }
@@ -85,6 +95,10 @@ function sendError(res, status, code, message) {
 function candidateExists(id) {
   return !!db.prepare('SELECT 1 FROM candidates WHERE id = ?').get(id);
 }
+
+// ---------------------------------------------------------------------------
+// Candidate & Review Endpoints
+// ---------------------------------------------------------------------------
 
 // GET /api/candidates
 app.get('/api/candidates', (req, res) => {
@@ -119,8 +133,7 @@ app.get('/api/candidates/:candidateId/reviews', (req, res) => {
   if (req.query.minRating !== undefined) {
     const raw = String(req.query.minRating);
     if (!/^\d+$/.test(raw) || Number(raw) < 1 || Number(raw) > 5) {
-      return sendError(res, 400, 'INVALID_PARAMETER',
-        'minRating must be an integer between 1 and 5');
+      return sendError(res, 400, 'INVALID_PARAMETER', 'minRating must be an integer between 1 and 5');
     }
     minRating = Number(raw);
   }
@@ -174,8 +187,6 @@ app.post('/api/candidates/:candidateId/reviews', (req, res) => {
 });
 
 // PUT /api/candidates/:candidateId/reviews/:reviewId
-// Full replacement: rating and text are required, user resets to the default if omitted.
-// The original review date is kept.
 app.put('/api/candidates/:candidateId/reviews/:reviewId', (req, res) => {
   const id = req.params.candidateId;
 
@@ -217,10 +228,13 @@ app.put('/api/candidates/:candidateId/reviews/:reviewId', (req, res) => {
   res.json(updated);
 });
 
-// In-memory fallback cache for landmarks (Part D)
+// ---------------------------------------------------------------------------
+// Transport & Landmarks (Group 10 Upstream)
+// ---------------------------------------------------------------------------
+
 let lastGoodLandmarks = null; // { data, asof }
 
-// GET /api/transport/landmarks -> Resilient Partner Integration with Fallback
+// GET /api/transport/landmarks
 app.get('/api/transport/landmarks', async (req, res) => {
   try {
     const partnerUrl = `${process.env.PARTNER_URL}/landmarks`;
@@ -241,7 +255,6 @@ app.get('/api/transport/landmarks', async (req, res) => {
 
     const landmarks = await response.json();
 
-    // Cache successful data in memory
     lastGoodLandmarks = {
       data: landmarks,
       asof: new Date().toISOString()
@@ -256,7 +269,6 @@ app.get('/api/transport/landmarks', async (req, res) => {
     const reason = err.name === 'TimeoutError' ? 'timeout' : (err.cause?.code || err.message);
     console.error(`Landmarks partner call failed: ${reason}`);
 
-    // If we have cached data, return it with stale: true
     if (lastGoodLandmarks) {
       return res.json({
         data: lastGoodLandmarks.data,
@@ -269,7 +281,7 @@ app.get('/api/transport/landmarks', async (req, res) => {
   }
 });
 
-// GET /api/transport/rides -> Partner Integration (Group 10)
+// GET /api/transport/rides
 app.get('/api/transport/rides', async (req, res) => {
   try {
     const { pickup_lat, pickup_lng, dropoff_lat, dropoff_lng } = req.query;
@@ -307,10 +319,10 @@ app.get('/api/transport/rides', async (req, res) => {
   }
 });
 
-// Civic event feed for Group 12 (accessibility / traffic planning).
-// These are sample events. Dates are generated from dayOffset relative to today
-// in Nairobi time (UTC+3), so the feed always has current and upcoming events.
-// Swap RALLY_TEMPLATES for a real data source when one exists.
+// ---------------------------------------------------------------------------
+// Civic Rally Feed & Templates
+// ---------------------------------------------------------------------------
+
 const RALLY_TEMPLATES = [
   {
     id: "rally_01",
@@ -348,7 +360,7 @@ const RALLY_TEMPLATES = [
     party: "Constitutional Integrity Alliance",
     venue: "Aga Khan University Hospital (Parklands)",
     location: { lat: -1.2618, lng: 36.8229 },
-    dayOffset: 2,
+    dayOffset: 1,
     startTime: "15:00",
     endTime: "18:00",
     expectedCrowd: "2,000",
@@ -362,7 +374,7 @@ const RALLY_TEMPLATES = [
     party: "Wiper Democratic Movement / Ukombozi Alliance",
     venue: "The Karen Hospital (Karen Road)",
     location: { lat: -1.3328, lng: 36.7198 },
-    dayOffset: 3,
+    dayOffset: 2,
     startTime: "11:00",
     endTime: "13:30",
     expectedCrowd: "1,000",
@@ -376,7 +388,7 @@ const RALLY_TEMPLATES = [
     party: "Social Justice Coalition",
     venue: "Gertrude's Children's Hospital (Muthaiga)",
     location: { lat: -1.2581, lng: 36.8361 },
-    dayOffset: 4,
+    dayOffset: 2,
     startTime: "09:30",
     endTime: "12:00",
     expectedCrowd: "800",
@@ -390,7 +402,7 @@ const RALLY_TEMPLATES = [
     party: "United Opposition Platform",
     venue: "Parklands Sports Club (Ojijo Road)",
     location: { lat: -1.2673, lng: 36.8142 },
-    dayOffset: 5,
+    dayOffset: 3,
     startTime: "16:00",
     endTime: "19:00",
     expectedCrowd: "2,500",
@@ -404,18 +416,116 @@ const RALLY_TEMPLATES = [
     party: "Multi-Party Civic Initiative",
     venue: "Nyayo National Stadium",
     location: { lat: -1.3039, lng: 36.8242 },
-    dayOffset: 6,
+    dayOffset: 4,
     startTime: "10:30",
     endTime: "17:30",
     expectedCrowd: "40,000+",
     eventType: "National Mega Campaign Rally"
+  },
+  {
+    id: "rally_08",
+    title: "Diplomatic Community & Sustainable Trade Forum",
+    organizer: "Green Economy Coalition",
+    candidate: "Civic Trade Policy Taskforce",
+    party: "Independent Civic Bloc",
+    venue: "Village Market (Limuru Road)",
+    location: { lat: -1.2294, lng: 36.8042 },
+    dayOffset: 3,
+    startTime: "14:00",
+    endTime: "16:30",
+    expectedCrowd: "1,200",
+    eventType: "Trade & Environment Townhall"
+  },
+  {
+    id: "rally_09",
+    title: "Urban Commerce, Taxation & Retail SMEs Dialogue",
+    organizer: "Nairobi Business Community Forum",
+    candidate: "Alliance for Economic Relief",
+    party: "United Progressive Alliance",
+    venue: "Sarit Centre (Westlands)",
+    location: { lat: -1.2635, lng: 36.8028 },
+    dayOffset: 2,
+    startTime: "10:00",
+    endTime: "13:00",
+    expectedCrowd: "3,500",
+    eventType: "SME Economic Summit"
+  },
+  {
+    id: "rally_10",
+    title: "Private Healthcare Financing & Medical Insurance Reform",
+    organizer: "Healthcare Access Initiative",
+    candidate: "Dr. Fred Matiang'i",
+    party: "Jubilee Coalition",
+    venue: "MP Shah Hospital (Shivachi Road, Parklands)",
+    location: { lat: -1.2642, lng: 36.8155 },
+    dayOffset: 1,
+    startTime: "11:00",
+    endTime: "13:30",
+    expectedCrowd: "900",
+    eventType: "Healthcare Stakeholders Forum"
+  },
+  {
+    id: "rally_11",
+    title: "Financial Inclusion, Micro-Credit & Fintech Policy Address",
+    organizer: "Financial Inclusion Secretariat",
+    candidate: "H.E. Dr. William Ruto",
+    party: "United Democratic Alliance (UDA)",
+    venue: "Equity Centre (Upper Hill, Hospital Road)",
+    location: { lat: -1.2989, lng: 36.8164 },
+    dayOffset: 4,
+    startTime: "14:30",
+    endTime: "17:00",
+    expectedCrowd: "2,200",
+    eventType: "Fintech & Financial Access Keynote"
+  },
+  {
+    id: "rally_12",
+    title: "Metropolitan Governance, Water Distribution & Waste Management Summit",
+    organizer: "Nairobi County Leadership Forum",
+    candidate: "Metropolitan Civic Coalition",
+    party: "Multi-Party Civic Initiative",
+    venue: "Nairobi City Hall (City Hall Way)",
+    location: { lat: -1.2884, lng: 36.8227 },
+    dayOffset: 0,
+    startTime: "09:00",
+    endTime: "12:00",
+    expectedCrowd: "4,000",
+    eventType: "Urban Governance & Accountability Townhall"
+  },
+  {
+    id: "rally_13",
+    title: "Media Freedom, Ethical Communications & Digital Rights Dialogue",
+    organizer: "Youth Civic League & Media Guild",
+    candidate: "Sen. Okiya Omtatah Okoiti",
+    party: "Social Justice Coalition",
+    venue: "Daystar University (Valley Road Campus)",
+    location: { lat: -1.2982, lng: 36.8062 },
+    dayOffset: 3,
+    startTime: "13:30",
+    endTime: "16:00",
+    expectedCrowd: "1,800",
+    eventType: "Campus Civic Townhall"
+  },
+  {
+    id: "rally_14",
+    title: "Higher Education Funding Model & International Relations Colloquium",
+    organizer: "Inter-University Student Council Secretariat",
+    candidate: "Justice (Rtd) David Maraga",
+    party: "Constitutional Integrity Alliance",
+    venue: "United States International University - Africa (USIU, Roysambu)",
+    location: { lat: -1.2186, lng: 36.8797 },
+    dayOffset: 5,
+    startTime: "10:30",
+    endTime: "14:00",
+    expectedCrowd: "4,500",
+    eventType: "Youth & Education Policy Address"
   }
 ];
 
 const NAIROBI_OFFSET_MS = 3 * 60 * 60 * 1000;
 
 function nairobiNow() {
-  const iso = new Date(Date.now() + NAIROBI_OFFSET_MS).toISOString(); // 2026-11-08T15:43:00.000Z
+  const iso = new Date(Date.now() + NAIROBI_OFFSET_MS).toISOString();
   return { date: iso.slice(0, 10), time: iso.slice(11, 16) };
 }
 
@@ -433,8 +543,7 @@ function getRallies() {
   }));
 }
 
-// GET /api/rallies            -> every sample event
-// GET /api/rallies?upcoming=true -> only events that have not ended yet
+// GET /api/rallies
 app.get('/api/rallies', (req, res) => {
   const { upcoming } = req.query;
 
@@ -453,17 +562,56 @@ app.get('/api/rallies', (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Travel advice for a rally. Combines our rally data with Group 10's landmarks
-// and rides. Everything returned is an estimate (see "disclaimer").
+// Rally Attendee Feedback & Accessibility Reports
 // ---------------------------------------------------------------------------
+
+// GET /api/rallies/:rallyId/comments
+app.get('/api/rallies/:rallyId/comments', (req, res) => {
+  const { rallyId } = req.params;
+  const comments = db.prepare(`
+    SELECT * FROM rally_comments
+    WHERE rally_id = ?
+    ORDER BY id DESC
+  `).all(rallyId);
+
+  res.json(comments);
+});
+
+// POST /api/rallies/:rallyId/comments
+app.post('/api/rallies/:rallyId/comments', (req, res) => {
+  const { rallyId } = req.params;
+  const { user, comment, accessible, congestion_level } = req.body || {};
+
+  if (!comment || typeof comment !== 'string' || comment.trim() === '') {
+    return sendError(res, 400, 'INVALID_INPUT', 'comment is required');
+  }
+
+  const reviewer = (typeof user === 'string' && user.trim()) ? user.trim() : 'Anonymous Attendee';
+  const isAccessible = (accessible === false || accessible === 0) ? 0 : 1;
+  const congestion = ['Low', 'Medium', 'Extreme'].includes(congestion_level) ? congestion_level : 'Medium';
+  const date = new Date().toISOString().split('T')[0];
+
+  const result = db.prepare(`
+    INSERT INTO rally_comments (rally_id, user, comment, accessible, congestion_level, date)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(rallyId, reviewer, comment.trim(), isAccessible, congestion, date);
+
+  const saved = db.prepare('SELECT * FROM rally_comments WHERE id = ?').get(result.lastInsertRowid);
+  res.status(201).json(saved);
+});
+
+// ---------------------------------------------------------------------------
+// Rally Travel Advice
+// ---------------------------------------------------------------------------
+
 const PARTNER_RETRY = { timeoutMs: 1500, retries: 2, delayMs: 200 };
 const PRESSURE_LEVELS = ['low', 'medium', 'high'];
-const PRESSURE_BUFFER_MINUTES = [15, 30, 60]; // arrive early for security, parking and queues
+const PRESSURE_BUFFER_MINUTES = [15, 30, 60];
 const WALKING_KM_PER_HOUR = 5;
-const ALT_DROPOFF_MIN_KM = 0.4; // closer than this is effectively the venue itself
-const ALT_DROPOFF_MAX_KM = 2;   // further than this is too far to walk
-const ALT_MIN_FARE_SAVING_PERCENT = 15; // only suggest walking if it is worth it:
-const ALT_MIN_MINUTES_SAVING = 3;       // 15% cheaper, or at least 3 minutes quicker
+const ALT_DROPOFF_MIN_KM = 0.4;
+const ALT_DROPOFF_MAX_KM = 2;
+const ALT_MIN_FARE_SAVING_PERCENT = 15;
+const ALT_MIN_MINUTES_SAVING = 3;
 
 async function fetchPartnerJson(path) {
   const response = await fetchWithRetry(
@@ -480,7 +628,6 @@ async function fetchPartnerJson(path) {
   return response.json();
 }
 
-// Reuses the same in-memory fallback as GET /api/transport/landmarks.
 async function loadLandmarks() {
   try {
     const list = await fetchPartnerJson('/landmarks');
@@ -535,10 +682,6 @@ function crowdNumber(text) {
   return Number.isFinite(n) ? n : 0;
 }
 
-// Rule-based, not live demand: expected attendance sets the base level
-// (under 1,500 low, 1,500 to 4,999 medium, 5,000 and over high). If rides look
-// scarce (fewer than 3 options, none at all, or the fastest is over 10 minutes
-// away) the level goes up one step.
 function assessPressure(rally, summary) {
   const crowd = crowdNumber(rally.expectedCrowd);
   let level = crowd >= 5000 ? 2 : crowd >= 1500 ? 1 : 0;
@@ -568,8 +711,6 @@ function assessPressure(rally, summary) {
   };
 }
 
-// Nearest landmark that is walkable from the venue, offered only when it is
-// clearly cheaper or quicker than going straight to the venue.
 async function findAlternativeDropoff(landmarks, pickup, pickupPoint, rally, mainSummary) {
   let best = null;
   for (const landmark of landmarks) {
@@ -585,7 +726,7 @@ async function findAlternativeDropoff(landmarks, pickup, pickupPoint, rally, mai
   try {
     altSummary = summariseRides(await loadPassengerRides(pickupPoint, best.point));
   } catch (err) {
-    return null; // the alternative is a bonus; never fail the whole request for it
+    return null;
   }
 
   const savesFare = mainSummary.cheapest && altSummary.cheapest
@@ -668,11 +809,10 @@ app.get('/api/rallies/:rallyId/travel', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Polling stations (our own data, see pollingStations.js). Group 10's /rides
-// only understands its own landmarks, so each station is matched to the
-// nearest landmark and rides are requested for that landmark.
+// Polling Stations & Snapping
 // ---------------------------------------------------------------------------
-const MAX_STATION_LANDMARK_KM = 15; // further than this and the fares would mislead
+
+const MAX_STATION_LANDMARK_KM = 15;
 
 // GET /api/polling-stations
 app.get('/api/polling-stations', (req, res) => {
@@ -718,12 +858,16 @@ app.get('/api/polling-stations/:stationId/nearest-landmark', async (req, res) =>
   }
 });
 
+// ---------------------------------------------------------------------------
+// Error Handling Fallbacks
+// ---------------------------------------------------------------------------
+
 // Unknown routes -> contract-shaped 404
 app.use((req, res) => {
   sendError(res, 404, 'NOT_FOUND', 'Route not found');
 });
 
-// Safety net: malformed JSON -> 400, anything else -> 500
+// JSON parsing error / safety net -> 400 or 500
 app.use((err, req, res, next) => {
   if (err.type === 'entity.parse.failed') {
     return sendError(res, 400, 'INVALID_REVIEW', 'Request body is not valid JSON');
