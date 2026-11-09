@@ -269,6 +269,200 @@ paths:
                 code: "NOT_FOUND"
                 message: "Review not found"
 
+  /rallies:
+    get:
+      summary: Return civic events and rallies
+      description: >
+        Sample civic event feed for Group 12 (accessibility and traffic
+        planning). Dates are generated relative to today in Nairobi time
+        (UTC+3), so the feed always contains current and upcoming events.
+        Results are ordered by date. Use upcoming=true to hide events that
+        have already ended.
+      parameters:
+        - name: upcoming
+          in: query
+          required: false
+          description: >
+            When true, return only events that have not ended yet. When false
+            or omitted, return every event in the feed.
+          schema:
+            type: boolean
+            example: true
+
+      responses:
+        '200':
+          description: A list of civic events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rally'
+              example:
+                - id: "rally_07"
+                  title: "National Presidential Final Pitch & Mega Civic Mobilization"
+                  organizer: "Consortium of Registered Political Parties & Civic Engagement Forum"
+                  candidate: "Presidential Candidates Joint Civic Appearance"
+                  party: "Multi-Party Civic Initiative"
+                  venue: "Nyayo National Stadium"
+                  location:
+                    lat: -1.3039
+                    lng: 36.8242
+                  date: "2026-11-14"
+                  startTime: "10:30"
+                  endTime: "17:30"
+                  expectedCrowd: "40,000+"
+                  eventType: "National Mega Campaign Rally"
+
+        '400':
+          description: The upcoming parameter is not true or false
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "INVALID_PARAMETER"
+                message: "upcoming must be true or false"
+
+  /rallies/{rallyId}/travel:
+    get:
+      summary: Travel advice for getting to a civic event
+      description: >
+        Combines our rally data with Group 10's landmarks and rides. Returns
+        the fastest and cheapest ride from the voter's starting landmark to the
+        venue, a crowd-pressure level, a suggested leave-by time and, when the
+        venue is likely to be busy, a walkable alternative drop-off. Everything
+        is an estimate: fares and ETAs reflect current conditions, not the
+        event time, and crowd pressure is a rule-based estimate from expected
+        attendance and the number of ride options, not live demand.
+      parameters:
+        - name: rallyId
+          in: path
+          required: true
+          description: Unique identifier of the rally
+          schema:
+            type: string
+            example: "rally_07"
+
+        - name: from
+          in: query
+          required: true
+          description: Id of the landmark the voter is starting from (from GET /transport/landmarks)
+          schema:
+            type: string
+            example: "1"
+
+      responses:
+        '200':
+          description: Travel advice for the rally
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelAdvice'
+              example:
+                rally:
+                  id: "rally_07"
+                  title: "National Presidential Final Pitch & Mega Civic Mobilization"
+                  venue: "Nyayo National Stadium"
+                  date: "2026-11-14"
+                  startTime: "10:30"
+                  endTime: "17:30"
+                  expectedCrowd: "40,000+"
+                from:
+                  id: "1"
+                  name: "cbd"
+                rides:
+                  count: 3
+                  fastest:
+                    id: "r1"
+                    providerName: "Bolt"
+                    rideType: "Bolt Boda"
+                    fare: { amount: 99, currency: "KES" }
+                    etaMinutes: 5
+                    capacity: 1
+                  cheapest:
+                    id: "r1"
+                    providerName: "Bolt"
+                    rideType: "Bolt Boda"
+                    fare: { amount: 99, currency: "KES" }
+                    etaMinutes: 5
+                    capacity: 1
+                pressure:
+                  level: "high"
+                  expectedCrowdNumber: 40000
+                  bufferMinutes: 60
+                  reasons:
+                    - "Expected attendance is 40,000+"
+                leaveBy:
+                  date: "2026-11-14"
+                  time: "09:25"
+                  basedOnEtaMinutes: 5
+                  bufferMinutes: 60
+                  leaveNow: false
+                alternativeDropoff:
+                  landmark: { id: "4", name: "uhuru park" }
+                  distanceKm: 1
+                  walkMinutes: 11
+                  fastest:
+                    id: "r1"
+                    providerName: "Bolt"
+                    rideType: "Bolt Boda"
+                    fare: { amount: 78, currency: "KES" }
+                    etaMinutes: 4
+                    capacity: 1
+                  cheapest:
+                    id: "r1"
+                    providerName: "Bolt"
+                    rideType: "Bolt Boda"
+                    fare: { amount: 78, currency: "KES" }
+                    etaMinutes: 4
+                    capacity: 1
+                  savesFare: 21
+                  savesMinutes: 1
+                disclaimer: "Estimates only. Ride fares and ETAs reflect current conditions, not the event time. Crowd pressure is a rule-based estimate from expected attendance and the number of ride options, not live demand."
+
+        '400':
+          description: The from parameter is missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "INVALID_PARAMETER"
+                message: "from (a landmark id) is required"
+
+        '404':
+          description: No rally or no landmark exists with the given id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "NOT_FOUND"
+                message: "Rally not found"
+
+        '409':
+          description: The event has already ended
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: "EVENT_ENDED"
+                message: "This event has already ended"
+
+        '502':
+          description: Group 10's landmarks or rides could not be reached
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: "Partner data unavailable"
+
 components:
   schemas:
 
@@ -451,3 +645,190 @@ components:
       example:
         code: "NOT_FOUND"
         message: "Candidate not found"
+
+    Rally:
+      type: object
+      required:
+        - id
+        - title
+        - venue
+        - location
+        - date
+        - startTime
+        - endTime
+        - expectedCrowd
+      properties:
+        id:
+          type: string
+          example: "rally_07"
+
+        title:
+          type: string
+          example: "National Presidential Final Pitch & Mega Civic Mobilization"
+
+        organizer:
+          type: string
+          example: "Consortium of Registered Political Parties & Civic Engagement Forum"
+
+        candidate:
+          type: string
+          example: "Presidential Candidates Joint Civic Appearance"
+
+        party:
+          type: string
+          example: "Multi-Party Civic Initiative"
+
+        venue:
+          type: string
+          example: "Nyayo National Stadium"
+
+        location:
+          type: object
+          description: Venue coordinates
+          properties:
+            lat:
+              type: number
+              format: float
+              example: -1.3039
+            lng:
+              type: number
+              format: float
+              example: 36.8242
+
+        date:
+          type: string
+          format: date
+          description: Event date in Nairobi time (YYYY-MM-DD)
+          example: "2026-11-14"
+
+        startTime:
+          type: string
+          description: Start time in Nairobi time (HH:MM, 24-hour)
+          example: "10:30"
+
+        endTime:
+          type: string
+          description: End time in Nairobi time (HH:MM, 24-hour)
+          example: "17:30"
+
+        expectedCrowd:
+          type: string
+          description: Approximate expected attendance, as text (for example "1,500" or "40,000+")
+          example: "40,000+"
+
+        eventType:
+          type: string
+          example: "National Mega Campaign Rally"
+
+    Ride:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "r1"
+        providerName:
+          type: string
+          example: "Bolt"
+        rideType:
+          type: string
+          example: "Bolt Boda"
+        fare:
+          type: object
+          properties:
+            amount:
+              type: number
+              example: 99
+            currency:
+              type: string
+              example: "KES"
+        etaMinutes:
+          type: integer
+          example: 5
+        capacity:
+          type: integer
+          example: 1
+
+    TravelAdvice:
+      type: object
+      properties:
+        rally:
+          type: object
+          properties:
+            id: { type: string, example: "rally_07" }
+            title: { type: string, example: "National Presidential Final Pitch & Mega Civic Mobilization" }
+            venue: { type: string, example: "Nyayo National Stadium" }
+            date: { type: string, format: date, example: "2026-11-14" }
+            startTime: { type: string, example: "10:30" }
+            endTime: { type: string, example: "17:30" }
+            expectedCrowd: { type: string, example: "40,000+" }
+        from:
+          type: object
+          properties:
+            id: { type: string, example: "1" }
+            name: { type: string, example: "cbd" }
+        rides:
+          type: object
+          description: Usable ride options (rides with capacity 0, such as parcel delivery, are ignored)
+          properties:
+            count: { type: integer, example: 3 }
+            fastest:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/Ride'
+            cheapest:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/Ride'
+        pressure:
+          type: object
+          description: >
+            Rule-based estimate. Expected attendance sets the base level
+            (under 1,500 low, 1,500 to 4,999 medium, 5,000 and over high). It
+            goes up one level if rides look scarce (fewer than 3 options, none,
+            or the fastest more than 10 minutes away).
+          properties:
+            level: { type: string, enum: [low, medium, high], example: "high" }
+            expectedCrowdNumber: { type: integer, example: 40000 }
+            bufferMinutes:
+              type: integer
+              description: Minutes to arrive early (15 low, 30 medium, 60 high)
+              example: 60
+            reasons:
+              type: array
+              items: { type: string }
+        leaveBy:
+          type: object
+          description: Event start minus the fastest ride's ETA minus the buffer, in Nairobi time
+          properties:
+            date: { type: string, format: date, example: "2026-11-14" }
+            time: { type: string, example: "09:25" }
+            basedOnEtaMinutes: { type: integer, example: 5 }
+            bufferMinutes: { type: integer, example: 60 }
+            leaveNow: { type: boolean, example: false }
+        alternativeDropoff:
+          type: object
+          nullable: true
+          description: >
+            Only present when pressure is medium or high and a landmark between
+            0.4 km and 2 km from the venue is at least 15% cheaper or 3 minutes
+            quicker to reach. Otherwise null.
+          properties:
+            landmark:
+              type: object
+              properties:
+                id: { type: string, example: "4" }
+                name: { type: string, example: "uhuru park" }
+            distanceKm: { type: number, example: 1 }
+            walkMinutes: { type: integer, example: 11 }
+            fastest:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/Ride'
+            cheapest:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/Ride'
+            savesFare: { type: number, example: 21 }
+            savesMinutes: { type: integer, example: 1 }
+        disclaimer:
+          type: string

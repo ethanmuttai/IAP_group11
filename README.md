@@ -58,6 +58,36 @@ curl -X PUT https://iap-group11.onrender.com/api/candidates/maraga/reviews/4 -H 
 ```
 A review id that doesn't exist, or belongs to a different candidate, returns `404`.
 
+**GET /api/rallies** returns the civic event feed provided for Group 12 (accessibility and traffic planning): venue, venue coordinates, date, start and end time (Nairobi time) and expected attendance. Optional query `upcoming=true` returns only events that have not ended yet. The events are sample data: dates are generated relative to today, so the feed always has current and upcoming events. Results are ordered by date.
+```
+curl "https://iap-group11.onrender.com/api/rallies?upcoming=true"
+```
+→ `200`
+```json
+[{"id":"rally_07","title":"National Presidential Final Pitch & Mega Civic Mobilization","organizer":"Consortium of Registered Political Parties & Civic Engagement Forum","candidate":"Presidential Candidates Joint Civic Appearance","party":"Multi-Party Civic Initiative","venue":"Nyayo National Stadium","location":{"lat":-1.3039,"lng":36.8242},"eventType":"National Mega Campaign Rally","startTime":"10:30","endTime":"17:30","expectedCrowd":"40,000+","date":"2026-11-14"}]
+```
+`expectedCrowd` is text (for example `"1,500"` or `"40,000+"`), not a number.
+
+**GET /api/rallies/:rallyId/travel?from=:landmarkId** is our own feature built on Group 10's data. It combines a rally with Group 10's landmarks and rides and returns: the fastest and cheapest ride from the landmark the voter starts at to the venue, a crowd-pressure level (`low`, `medium` or `high`), a suggested leave-by time, and, when the venue is likely to be busy, a walkable alternative drop-off. `from` is a landmark id from `GET /api/transport/landmarks`.
+```
+curl "https://iap-group11.onrender.com/api/rallies/rally_07/travel?from=1" -H "X-API-Key: YOUR_KEY"
+```
+→ `200` (shortened)
+```json
+{"rally":{"id":"rally_07","venue":"Nyayo National Stadium","date":"2026-11-14","startTime":"10:30","expectedCrowd":"40,000+"},
+ "from":{"id":"1","name":"cbd"},
+ "rides":{"count":3,"fastest":{"providerName":"Bolt","rideType":"Bolt Boda","fare":{"amount":99,"currency":"KES"},"etaMinutes":5},"cheapest":{"providerName":"Bolt","rideType":"Bolt Boda","fare":{"amount":99,"currency":"KES"},"etaMinutes":5}},
+ "pressure":{"level":"high","expectedCrowdNumber":40000,"bufferMinutes":60,"reasons":["Expected attendance is 40,000+"]},
+ "leaveBy":{"date":"2026-11-14","time":"09:25","basedOnEtaMinutes":5,"bufferMinutes":60,"leaveNow":false},
+ "alternativeDropoff":{"landmark":{"id":"4","name":"uhuru park"},"distanceKm":1,"walkMinutes":11,"savesFare":21,"savesMinutes":1},
+ "disclaimer":"Estimates only. ..."}
+```
+How the numbers are worked out:
+- **Crowd pressure** is a rule, not live demand. Expected attendance sets the base level (under 1,500 low, 1,500 to 4,999 medium, 5,000 and over high). It goes up one level if rides look scarce: fewer than 3 options, none at all, or the fastest more than 10 minutes away.
+- **Leave-by** is the event start minus the fastest ride's ETA minus a buffer to arrive early (15 minutes for low, 30 for medium, 60 for high pressure). ETAs and fares are for right now, not for the event time.
+- **Alternative drop-off** is only offered for medium or high pressure: the nearest landmark between 0.4 km and 2 km from the venue, if rides there are at least 15% cheaper or 3 minutes quicker.
+- Rides with capacity 0 (for example parcel delivery) are ignored.
+
 (Windows PowerShell users: use `curl.exe`, and put the JSON body in a file, then pass `--data-binary "@body.json"`.)
 
 ## Errors
@@ -68,6 +98,11 @@ Every error returns JSON in the form `{ "code": "...", "message": "..." }`.
 |---|---|---|
 | `GET /api/candidates/nobody` (unknown candidate, also on `/reviews` GET and POST) | 404 | `{ "code": "NOT_FOUND", "message": "Candidate not found" }` |
 | `GET .../reviews?minRating=abc` (not an integer from 1 to 5) | 400 | `{ "code": "INVALID_PARAMETER", "message": "minRating must be an integer between 1 and 5" }` |
+| `GET /api/rallies?upcoming=maybe` (not true or false) | 400 | `{ "code": "INVALID_PARAMETER", "message": "upcoming must be true or false" }` |
+| `GET /api/rallies/rally_99/travel?from=1` (unknown rally, or unknown landmark) | 404 | `{ "code": "NOT_FOUND", "message": "Rally not found" }` |
+| `GET .../travel` without `from` | 400 | `{ "code": "INVALID_PARAMETER", "message": "from (a landmark id) is required" }` |
+| `GET .../travel` for an event that has already ended | 409 | `{ "code": "EVENT_ENDED", "message": "This event has already ended" }` |
+| `GET .../travel` when Group 10 cannot be reached | 502 | `{ "message": "Partner data unavailable" }` |
 | `PUT .../reviews/999` (review not found for that candidate) | 404 | `{ "code": "NOT_FOUND", "message": "Review not found" }` |
 | POST or PUT missing `rating` or `text` | 400 | `{ "code": "INVALID_REVIEW", "message": "rating and text are required" }` |
 | POST with `rating` outside 1 to 5 or not an integer | 400 | `{ "code": "INVALID_REVIEW", "message": "rating must be an integer between 1 and 5" }` |
