@@ -5,6 +5,7 @@ const cors = require('cors');
 const Database = require('better-sqlite3');
 const { fetchWithRetry } = require('./resilientFetch');
 const { monitor, statsHandler } = require('./monitoring');
+const POLLING_STATIONS = require('./pollingStations');
 
 
 const app = express();
@@ -662,6 +663,57 @@ app.get('/api/rallies/:rallyId/travel', async (req, res) => {
   } catch (err) {
     const reason = err.name === 'TimeoutError' ? 'timeout' : (err.cause?.code || err.message);
     console.error('Rally travel advice failed:', reason);
+    res.status(502).json({ message: 'Partner data unavailable' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Polling stations (our own data, see pollingStations.js). Group 10's /rides
+// only understands its own landmarks, so each station is matched to the
+// nearest landmark and rides are requested for that landmark.
+// ---------------------------------------------------------------------------
+const MAX_STATION_LANDMARK_KM = 15; // further than this and the fares would mislead
+
+// GET /api/polling-stations
+app.get('/api/polling-stations', (req, res) => {
+  res.json(POLLING_STATIONS);
+});
+
+// GET /api/polling-stations/:stationId/nearest-landmark
+app.get('/api/polling-stations/:stationId/nearest-landmark', async (req, res) => {
+  const station = POLLING_STATIONS.find(s => s.id === req.params.stationId);
+  if (!station) {
+    return sendError(res, 404, 'NOT_FOUND', 'Polling station not found');
+  }
+
+  try {
+    const landmarks = await loadLandmarks();
+
+    let nearest = null;
+    for (const landmark of landmarks) {
+      const point = coords(landmark);
+      if (!point) continue;
+      const km = distanceKm(station.location, point);
+      if (!nearest || km < nearest.km) nearest = { landmark, point, km };
+    }
+
+    if (!nearest || nearest.km > MAX_STATION_LANDMARK_KM) {
+      return sendError(res, 422, 'NO_NEARBY_LANDMARK',
+        `No ride landmark within ${MAX_STATION_LANDMARK_KM} km of this polling station`);
+    }
+
+    res.json({
+      station: { id: station.id, name: station.name, area: station.area },
+      landmark: {
+        id: String(nearest.landmark.id),
+        name: nearest.landmark.name,
+        location: nearest.point
+      },
+      distanceKm: Math.round(nearest.km * 10) / 10
+    });
+  } catch (err) {
+    const reason = err.name === 'TimeoutError' ? 'timeout' : (err.cause?.code || err.message);
+    console.error('Nearest landmark lookup failed:', reason);
     res.status(502).json({ message: 'Partner data unavailable' });
   }
 });

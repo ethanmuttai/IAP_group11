@@ -4,6 +4,7 @@ import SectionHeader from '../components/SectionHeader';
 
 const API_BASE = 'http://localhost:5000/api/transport';
 const RALLIES_URL = 'http://localhost:5000/api/rallies';
+const STATIONS_URL = 'http://localhost:5000/api/polling-stations';
 
 const API_HEADERS = {
   'Content-Type': 'application/json',
@@ -115,6 +116,12 @@ const PollingStationLocator = () => {
   const [rideType, setRideType] = useState('');
   const [sortBy, setSortBy] = useState('eta');
 
+  // Our own polling stations (GET /api/polling-stations)
+  const [stations, setStations] = useState([]);
+  const [stationsError, setStationsError] = useState(false);
+  // Which Group 10 landmark the fares were requested for (their API only knows landmarks)
+  const [matchedLandmark, setMatchedLandmark] = useState(null); // { name, distanceKm, station }
+
   const [rides, setRides] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchError, setSearchError] = useState('');
@@ -128,6 +135,18 @@ const PollingStationLocator = () => {
   // Travel advice per rally: { [rallyId]: { status: 'loading' | 'done' | 'error', data, message } }
   const [travel, setTravel] = useState({});
   const pickupRef = useRef('');
+
+  // Stations grouped by area, keeping the order the API sends them in.
+  const stationAreas = [];
+  stations.forEach((s) => {
+    let group = stationAreas.find((g) => g.area === s.area);
+    if (!group) {
+      group = { area: s.area, items: [] };
+      stationAreas.push(group);
+    }
+    group.items.push(s);
+  });
+  const selectedStation = stations.find((s) => s.id === dropoffId);
 
   // Fetch landmarks and rally events on component mount
   useEffect(() => {
@@ -154,6 +173,20 @@ const PollingStationLocator = () => {
       .catch((err) => {
         console.error('Failed to load landmarks from proxy:', err);
         setLandmarksError(true);
+      });
+
+    fetch(STATIONS_URL, { headers: API_HEADERS })
+      .then((res) => {
+        if (!res.ok) throw new Error('Could not load polling stations');
+        return res.json();
+      })
+      .then((data) => {
+        setStations(Array.isArray(data) ? data : []);
+        setStationsError(false);
+      })
+      .catch((err) => {
+        console.error('Failed to load polling stations:', err);
+        setStationsError(true);
       });
 
     // Only events that have not ended yet
@@ -216,21 +249,37 @@ const PollingStationLocator = () => {
     if (!pickupId || !dropoffId) return;
 
     const pickup = landmarks.find((l) => String(l.id) === String(pickupId));
-    const dropoff = landmarks.find((l) => String(l.id) === String(dropoffId));
-    if (!pickup || !dropoff) return;
+    const station = stations.find((s) => s.id === dropoffId);
+    if (!pickup || !station) return;
 
     setLoading(true);
     setSearchError('');
     setHasSearched(true);
-
-    const params = new URLSearchParams({
-      pickup_lat: pickup.location.lat,
-      pickup_lng: pickup.location.lng,
-      dropoff_lat: dropoff.location.lat,
-      dropoff_lng: dropoff.location.lng,
-    });
+    setMatchedLandmark(null);
 
     try {
+      // Group 10 only understands its own landmarks, so use the one nearest to the station.
+      const matchRes = await fetch(`${STATIONS_URL}/${encodeURIComponent(station.id)}/nearest-landmark`, {
+        headers: API_HEADERS
+      });
+      if (!matchRes.ok) {
+        throw new Error(
+          matchRes.status === 422 ? 'Ride data does not cover that polling station area yet.'
+          : matchRes.status === 502 ? 'Ride data is unavailable right now. Please try again shortly.'
+          : 'Could not work out ride prices for that polling station.'
+        );
+      }
+      const match = await matchRes.json();
+      const dropoff = match.landmark;
+      setMatchedLandmark({ name: dropoff.name, distanceKm: match.distanceKm, station: station.name });
+
+      const params = new URLSearchParams({
+        pickup_lat: pickup.location.lat,
+        pickup_lng: pickup.location.lng,
+        dropoff_lat: dropoff.location.lat,
+        dropoff_lng: dropoff.location.lng,
+      });
+
       const res = await fetch(`${API_BASE}/rides?${params.toString()}`, {
         headers: API_HEADERS
       });
@@ -376,6 +425,12 @@ const PollingStationLocator = () => {
         </Alert>
       )}
 
+      {stationsError && (
+        <Alert variant="warning">
+          Couldn't load the polling station list right now. Try again shortly.
+        </Alert>
+      )}
+
       <Form onSubmit={handleSearch} className="p-4 bg-white border rounded-4 shadow-sm mb-4">
         <Row className="g-3 mb-3">
           <Col md={6}>
@@ -392,13 +447,20 @@ const PollingStationLocator = () => {
           <Col md={6}>
             <Form.Label className="small fw-bold text-secondary">YOUR POLLING STATION</Form.Label>
             <Form.Select value={dropoffId} onChange={(e) => setDropoffId(e.target.value)} required>
-              <option value="">Select a landmark…</option>
-              {landmarks.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.name ? l.name.charAt(0).toUpperCase() + l.name.slice(1) : l.id}
-                </option>
+              <option value="">Select a polling station…</option>
+              {stationAreas.map((group) => (
+                <optgroup key={group.area} label={group.area}>
+                  {group.items.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </optgroup>
               ))}
             </Form.Select>
+            {selectedStation && !selectedStation.verified && (
+              <Form.Text className="text-muted">
+                Sample station, not yet checked against the IEBC register.
+              </Form.Text>
+            )}
           </Col>
         </Row>
 
@@ -432,6 +494,15 @@ const PollingStationLocator = () => {
       </Form>
 
       {searchError && <Alert variant="danger">{searchError}</Alert>}
+
+      {hasSearched && !searchError && matchedLandmark && (
+        <div className="small text-muted mb-2">
+          Prices are shown to the nearest ride landmark,{' '}
+          <strong className="text-capitalize">{matchedLandmark.name}</strong>
+          {matchedLandmark.distanceKm > 0.5 && <> (about {matchedLandmark.distanceKm} km from {matchedLandmark.station})</>}
+          , not the exact station.
+        </div>
+      )}
 
       {hasSearched && !searchError && (
         rides.length === 0 ? (

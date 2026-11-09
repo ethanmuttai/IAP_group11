@@ -62,7 +62,7 @@
       }
       
       .http-method {
-        text-transform: uppercase;
+       text-transform: uppercase;
       }
       
       pre.get {
@@ -129,17 +129,17 @@
       }
       
       .param-enum-header {
-        width: 700px;
-        padding: 0 0 0 60px;
-        color: #777;
-        font-weight: bold;
+      width: 700px;
+      padding: 0 0 0 60px;
+      color: #777;
+      font-weight: bold;
       }
       
       .param-enum {
-        width: 700px;
-        padding: 0 0 0 80px;
-        color: #777;
-        font-style: italic;
+      width: 700px;
+      padding: 0 0 0 80px;
+      color: #777;
+      font-style: italic;
       }
       
       .field-label {
@@ -178,56 +178,64 @@
     </style>
   </head>
   <body>
-    <h1>Voter Edu API</h1>
+  <h1>Voter Edu API</h1>
     <div class="app-desc">API exposed by Voter Edu to downstream partners for accessing candidate information, policy positions, and candidate reviews. The API supports reading candidate information, creating reviews, editing existing reviews, reading civic events, and getting travel advice for an event.</div>
     <div class="app-desc">More information: <a href="https://helloreverb.com">https://helloreverb.com</a></div>
-    <div class="app-desc">Contact Info: <a href="mailto:hello@helloreverb.com">hello@helloreverb.com</a></div>
+    <div class="app-desc">Contact Info: <a href="hello@helloreverb.com">hello@helloreverb.com</a></div>
     <div class="app-desc">Version: 1.0.0</div>
     <div class="app-desc">BasePath:/api</div>
     <div class="license-info">All rights reserved</div>
-    <div class="license-url"><a href="http://apache.org/licenses/LICENSE-2.0.html">http://apache.org/licenses/LICENSE-2.0.html</a></div>
+    <div class="license-url">http://apache.org/licenses/LICENSE-2.0.html</div>
+  <h2>Access</h2>
 
-    <h2>Access</h2>
+  <h2><a name="__Methods">Methods</a></h2>
+  [ Jump to <a href="#__Models">Models</a> ]
 
-    <h2><a name="__Methods">Methods</a></h2>
-    [ Jump to <a href="#__Models">Models</a> ]
+  <h3>Table of Contents </h3>
+  <div class="method-summary"></div>
+  <h4><a href="#Default">Default</a></h4>
+  <ul>
+  <li><a href="#candidatesCandidateIdGet"><code><span class="http-method">get</span> /candidates/{candidateId}</code></a></li>
+  <li><a href="#candidatesCandidateIdReviewsGet"><code><span class="http-method">get</span> /candidates/{candidateId}/reviews</code></a></li>
+  <li><a href="#candidatesCandidateIdReviewsPost"><code><span class="http-method">post</span> /candidates/{candidateId}/reviews</code></a></li>
+  <li><a href="#candidatesCandidateIdReviewsReviewIdPut"><code><span class="http-method">put</span> /candidates/{candidateId}/reviews/{reviewId}</code></a></li>
+  <li><a href="#candidatesGet"><code><span class="http-method">get</span> /candidates</code></a></li>
+  <li><a href="#ralliesGet"><code><span class="http-method">get</span> /rallies</code></a></li>
+  <li><a href="#pollingStationsGet"><code><span class="http-method">get</span> /polling-stations</code></a></li>
+  <li><a href="#pollingStationsStationIdNearestLandmarkGet"><code><span class="http-method">get</span> /polling-stations/{stationId}/nearest-landmark</code></a></li>
+  <li><a href="#ralliesRallyIdTravelGet"><code><span class="http-method">get</span> /rallies/{rallyId}/travel</code></a></li>
+  </ul>
 
-    <h3>Table of Contents </h3>
-    <div class="method-summary"></div>
-    <h4><a href="#Default">Default</a></h4>
-    <ul>
-      <li><a href="#candidatesCandidateIdGet"><code><span class="http-method">get</span> /candidates/{candidateId}</code></a></li>
-      <li><a href="#candidatesCandidateIdReviewsGet"><code><span class="http-method">get</span> /candidates/{candidateId}/reviews</code></a></li>
-      <li><a href="#candidatesCandidateIdReviewsPost"><code><span class="http-method">post</span> /candidates/{candidateId}/reviews</code></a></li>
-      <li><a href="#candidatesCandidateIdReviewsReviewIdPut"><code><span class="http-method">put</span> /candidates/{candidateId}/reviews/{reviewId}</code></a></li>
-      <li><a href="#candidatesGet"><code><span class="http-method">get</span> /candidates</code></a></li>
-      <li><a href="#ralliesGet"><code><span class="http-method">get</span> /rallies</code></a></li>
-      <li><a href="#ralliesRallyIdTravelGet"><code><span class="http-method">get</span> /rallies/{rallyId}/travel</code></a></li>
-    </ul>
+  <h1><a name="Default">Default</a></h1>
+  <div class="method"><a name="candidatesCandidateIdGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /candidates/{candidateId}</code></pre></div>
+    <div class="method-summary">Return the full profile of a single candidate (<span class="nickname">candidatesCandidateIdGet</span>)</div>
+    <div class="method-notes"></div>
 
-    <h1><a name="Default">Default</a></h1>
-    <div class="method"><a name="candidatesCandidateIdGet"></a>
-      <div class="method-path">
-        <a class="up" href="#__Methods">Up</a>
-        <pre class="get"><code class="huge"><span class="http-method">get</span> /candidates/{candidateId}</code></pre>
-      </div>
-      <div class="method-summary">Return the full profile of a single candidate (<span class="nickname">candidatesCandidateIdGet</span>)</div>
-      <div class="method-notes"></div>
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">candidateId (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate </div>    </div>  <!-- field-items -->
 
-      <h3 class="field-label">Path parameters</h3>
-      <div class="field-items">
-        <div class="param">candidateId (required)</div>
-        <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate </div>
-      </div>
 
-      <h3 class="field-label">Return type</h3>
-      <div class="return-type">
-        <a href="#Candidate">Candidate</a>
-      </div>
 
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Candidate">Candidate</a>
+      
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
   "id" : "ruto",
   "initials" : "WR",
   "name" : "Dr. William Ruto",
@@ -243,59 +251,69 @@
   "review_count" : 1
 }</code></pre>
 
-      <h3 class="field-label">Produces</h3>
-      This API call produces the following media types according to the <span class="header">Accept</span> request header;
-      the media type will be conveyed by the <span class="header">Content-Type</span> response header.
-      <ul>
-        <li><code>application/json</code></li>
-      </ul>
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
 
-      <h3 class="field-label">Responses</h3>
-      <h4 class="field-label">200</h4>
-      The requested candidate profile
-      <a href="#Candidate">Candidate</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"id":"ruto","initials":"WR","name":"Dr. William Ruto","party":"Kenya Kwanza Alliance / UDA","description":"Current President of Kenya with experience in national government.","experience":"Current President of Kenya (2022-2026), former Deputy President (2013-2022).","vision":"The Bottom-Up Economic Transformation Agenda (BETA).","fiscal":"Expanding the formal tax base to manage public debt.","agriculture":"Subsidized farm inputs and fertilizer distribution.","governance":"Protecting and increasing funding to the 47 counties.","cost_of_living":"Cutting consumer levies and production taxes.","average_rating":4,"review_count":1}</code></pre>
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    The requested candidate profile
+        <a href="#Candidate">Candidate</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;id&quot;:&quot;ruto&quot;,&quot;initials&quot;:&quot;WR&quot;,&quot;name&quot;:&quot;Dr. William Ruto&quot;,&quot;party&quot;:&quot;Kenya Kwanza Alliance / UDA&quot;,&quot;description&quot;:&quot;Current President of Kenya with experience in national government.&quot;,&quot;experience&quot;:&quot;Current President of Kenya (2022-2026), former Deputy President (2013-2022).&quot;,&quot;vision&quot;:&quot;The Bottom-Up Economic Transformation Agenda (BETA).&quot;,&quot;fiscal&quot;:&quot;Expanding the formal tax base to manage public debt.&quot;,&quot;agriculture&quot;:&quot;Subsidized farm inputs and fertilizer distribution.&quot;,&quot;governance&quot;:&quot;Protecting and increasing funding to the 47 counties.&quot;,&quot;cost_of_living&quot;:&quot;Cutting consumer levies and production taxes.&quot;,&quot;average_rating&quot;:4,&quot;review_count&quot;:1}</code></pre>
+    <h4 class="field-label">404</h4>
+    No candidate exists with the given candidate ID
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;NOT_FOUND&quot;,&quot;message&quot;:&quot;Candidate not found&quot;}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="candidatesCandidateIdReviewsGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /candidates/{candidateId}/reviews</code></pre></div>
+    <div class="method-summary">Return all reviews for a candidate, optionally filtered by minimum rating (<span class="nickname">candidatesCandidateIdReviewsGet</span>)</div>
+    <div class="method-notes"></div>
 
-      <h4 class="field-label">404</h4>
-      No candidate exists with the given candidate ID
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"NOT_FOUND","message":"Candidate not found"}</code></pre>
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">candidateId (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate </div>    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">minRating (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Return only reviews with a rating greater than or equal to this value </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#Review">Review</a>]
+      
     </div>
 
-    <hr/>
+    <!--Todo: process Response Object and its headers, schema, examples -->
 
-    <div class="method"><a name="candidatesCandidateIdReviewsGet"></a>
-      <div class="method-path">
-        <a class="up" href="#__Methods">Up</a>
-        <pre class="get"><code class="huge"><span class="http-method">get</span> /candidates/{candidateId}/reviews</code></pre>
-      </div>
-      <div class="method-summary">Return all reviews for a candidate, optionally filtered by minimum rating (<span class="nickname">candidatesCandidateIdReviewsGet</span>)</div>
-      <div class="method-notes"></div>
-
-      <h3 class="field-label">Path parameters</h3>
-      <div class="field-items">
-        <div class="param">candidateId (required)</div>
-        <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate </div>
-      </div>
-
-      <h3 class="field-label">Query parameters</h3>
-      <div class="field-items">
-        <div class="param">minRating (optional)</div>
-        <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Return only reviews with a rating greater than or equal to this value </div>
-      </div>
-
-      <h3 class="field-label">Return type</h3>
-      <div class="return-type">
-        array[<a href="#Review">Review</a>]
-      </div>
-
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>[ {
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[ {
+  "id" : 1,
+  "candidate_id" : "ruto",
+  "user" : "Anonymous Voter",
+  "rating" : 4,
+  "text" : "Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.",
+  "date" : "2026-06-25"
+}, {
   "id" : 1,
   "candidate_id" : "ruto",
   "user" : "Anonymous Voter",
@@ -304,77 +322,78 @@
   "date" : "2026-06-25"
 } ]</code></pre>
 
-      <h3 class="field-label">Produces</h3>
-      This API call produces the following media types according to the <span class="header">Accept</span> request header;
-      the media type will be conveyed by the <span class="header">Content-Type</span> response header.
-      <ul>
-        <li><code>application/json</code></li>
-      </ul>
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
 
-      <h3 class="field-label">Responses</h3>
-      <h4 class="field-label">200</h4>
-      A list of reviews for the candidate
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    A list of reviews for the candidate
+        
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[{&quot;id&quot;:1,&quot;candidate_id&quot;:&quot;ruto&quot;,&quot;user&quot;:&quot;Anonymous Voter&quot;,&quot;rating&quot;:4,&quot;text&quot;:&quot;Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.&quot;,&quot;date&quot;:&quot;2026-06-25&quot;}]</code></pre>
+    <h4 class="field-label">400</h4>
+    Invalid minimum rating supplied
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;INVALID_PARAMETER&quot;,&quot;message&quot;:&quot;minRating must be an integer between 1 and 5&quot;}</code></pre>
+    <h4 class="field-label">404</h4>
+    No candidate exists with the given candidate ID
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;NOT_FOUND&quot;,&quot;message&quot;:&quot;Candidate not found&quot;}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="candidatesCandidateIdReviewsPost"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /candidates/{candidateId}/reviews</code></pre></div>
+    <div class="method-summary">Add a new review for a candidate (<span class="nickname">candidatesCandidateIdReviewsPost</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">candidateId (required)</div>
       
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>[{"id":1,"candidate_id":"ruto","user":"Anonymous Voter","rating":4,"text":"Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.","date":"2026-06-25"}]</code></pre>
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate being reviewed </div>    </div>  <!-- field-items -->
 
-      <h4 class="field-label">400</h4>
-      Invalid minimum rating supplied
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"INVALID_PARAMETER","message":"minRating must be an integer between 1 and 5"}</code></pre>
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
 
-      <h4 class="field-label">404</h4>
-      No candidate exists with the given candidate ID
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"NOT_FOUND","message":"Candidate not found"}</code></pre>
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#CreateReviewRequest">CreateReviewRequest</a> (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+            <div class="param-desc"><span class="param-type">example: <code>{
+  &quot;user&quot; : &quot;Verified User&quot;,
+  &quot;rating&quot; : 5,
+  &quot;text&quot; : &quot;The candidate has clearly communicated their policy priorities.&quot;
+}</code></span></div>    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#Review">Review</a>
+      
     </div>
 
-    <hr/>
+    <!--Todo: process Response Object and its headers, schema, examples -->
 
-    <div class="method"><a name="candidatesCandidateIdReviewsPost"></a>
-      <div class="method-path">
-        <a class="up" href="#__Methods">Up</a>
-        <pre class="post"><code class="huge"><span class="http-method">post</span> /candidates/{candidateId}/reviews</code></pre>
-      </div>
-      <div class="method-summary">Add a new review for a candidate (<span class="nickname">candidatesCandidateIdReviewsPost</span>)</div>
-      <div class="method-notes"></div>
-
-      <h3 class="field-label">Path parameters</h3>
-      <div class="field-items">
-        <div class="param">candidateId (required)</div>
-        <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate being reviewed </div>
-      </div>
-
-      <h3 class="field-label">Consumes</h3>
-      This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
-      <ul>
-        <li><code>application/json</code></li>
-      </ul>
-
-      <h3 class="field-label">Request body</h3>
-      <div class="field-items">
-        <div class="param">body <a href="#CreateReviewRequest">CreateReviewRequest</a> (required)</div>
-        <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; </div>
-        <div class="param-desc"><span class="param-type">example: <code>{
-  "user" : "Verified User",
-  "rating" : 5,
-  "text" : "The candidate has clearly communicated their policy priorities."
-}</code></span></div>
-      </div>
-
-      <h3 class="field-label">Return type</h3>
-      <div class="return-type">
-        <a href="#Review">Review</a>
-      </div>
-
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
   "id" : 1,
   "candidate_id" : "ruto",
   "user" : "Anonymous Voter",
@@ -383,79 +402,81 @@
   "date" : "2026-06-25"
 }</code></pre>
 
-      <h3 class="field-label">Produces</h3>
-      This API call produces the following media types according to the <span class="header">Accept</span> request header;
-      the media type will be conveyed by the <span class="header">Content-Type</span> response header.
-      <ul>
-        <li><code>application/json</code></li>
-      </ul>
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
 
-      <h3 class="field-label">Responses</h3>
-      <h4 class="field-label">201</h4>
-      Review created successfully
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">201</h4>
+    Review created successfully
+        <a href="#Review">Review</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;id&quot;:2,&quot;candidate_id&quot;:&quot;ruto&quot;,&quot;user&quot;:&quot;Verified User&quot;,&quot;rating&quot;:5,&quot;text&quot;:&quot;The candidate has clearly communicated their policy priorities.&quot;,&quot;date&quot;:&quot;2026-06-26&quot;}</code></pre>
+    <h4 class="field-label">400</h4>
+    Missing or invalid review information
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;INVALID_REVIEW&quot;,&quot;message&quot;:&quot;rating and text are required&quot;}</code></pre>
+    <h4 class="field-label">404</h4>
+    No candidate exists with the given candidate ID
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;NOT_FOUND&quot;,&quot;message&quot;:&quot;Candidate not found&quot;}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="candidatesCandidateIdReviewsReviewIdPut"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="put"><code class="huge"><span class="http-method">put</span> /candidates/{candidateId}/reviews/{reviewId}</code></pre></div>
+    <div class="method-summary">Replace an existing review for a candidate (<span class="nickname">candidatesCandidateIdReviewsReviewIdPut</span>)</div>
+    <div class="method-notes">Full replacement. rating and text are required. If user is omitted it resets to &quot;Anonymous Voter&quot;. The original review date is kept.</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">candidateId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate the review belongs to </div>
+      <div class="param">reviewId (required)</div>
+
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the review to replace </div>    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Consumes</h3>
+    This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
+
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">body <a href="#CreateReviewRequest">CreateReviewRequest</a> (required)</div>
+
+            <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash;  </div>
+            <div class="param-desc"><span class="param-type">example: <code>{
+  &quot;user&quot; : &quot;Verified User&quot;,
+  &quot;rating&quot; : 3,
+  &quot;text&quot; : &quot;Updated view after the debate.&quot;
+}</code></span></div>    </div>  <!-- field-items -->
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
       <a href="#Review">Review</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"id":2,"candidate_id":"ruto","user":"Verified User","rating":5,"text":"The candidate has clearly communicated their policy priorities.","date":"2026-06-26"}</code></pre>
 
-      <h4 class="field-label">400</h4>
-      Missing or invalid review information
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"INVALID_REVIEW","message":"rating and text are required"}</code></pre>
-
-      <h4 class="field-label">404</h4>
-      No candidate exists with the given candidate ID
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"NOT_FOUND","message":"Candidate not found"}</code></pre>
     </div>
 
-    <hr/>
+    <!--Todo: process Response Object and its headers, schema, examples -->
 
-    <div class="method"><a name="candidatesCandidateIdReviewsReviewIdPut"></a>
-      <div class="method-path">
-        <a class="up" href="#__Methods">Up</a>
-        <pre class="put"><code class="huge"><span class="http-method">put</span> /candidates/{candidateId}/reviews/{reviewId}</code></pre>
-      </div>
-      <div class="method-summary">Replace an existing review for a candidate (<span class="nickname">candidatesCandidateIdReviewsReviewIdPut</span>)</div>
-      <div class="method-notes">Full replacement. rating and text are required. If user is omitted it resets to "Anonymous Voter". The original review date is kept.</div>
-
-      <h3 class="field-label">Path parameters</h3>
-      <div class="field-items">
-        <div class="param">candidateId (required)</div>
-        <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the candidate the review belongs to </div>
-        <div class="param">reviewId (required)</div>
-        <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the review to replace </div>
-      </div>
-
-      <h3 class="field-label">Consumes</h3>
-      This API call consumes the following media types via the <span class="header">Content-Type</span> request header:
-      <ul>
-        <li><code>application/json</code></li>
-      </ul>
-
-      <h3 class="field-label">Request body</h3>
-      <div class="field-items">
-        <div class="param">body <a href="#CreateReviewRequest">CreateReviewRequest</a> (required)</div>
-        <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; </div>
-        <div class="param-desc"><span class="param-type">example: <code>{
-  "user" : "Verified User",
-  "rating" : 3,
-  "text" : "Updated view after the debate."
-}</code></span></div>
-      </div>
-
-      <h3 class="field-label">Return type</h3>
-      <div class="return-type">
-        <a href="#Review">Review</a>
-      </div>
-
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
   "id" : 2,
   "candidate_id" : "ruto",
   "user" : "Verified User",
@@ -464,54 +485,72 @@
   "date" : "2026-06-26"
 }</code></pre>
 
-      <h3 class="field-label">Produces</h3>
-      This API call produces the following media types according to the <span class="header">Accept</span> request header;
-      the media type will be conveyed by the <span class="header">Content-Type</span> response header.
-      <ul>
-        <li><code>application/json</code></li>
-      </ul>
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
 
-      <h3 class="field-label">Responses</h3>
-      <h4 class="field-label">200</h4>
-      Review replaced successfully
-      <a href="#Review">Review</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"id":2,"candidate_id":"ruto","user":"Verified User","rating":3,"text":"Updated view after the debate.","date":"2026-06-26"}</code></pre>
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Review replaced successfully
+        <a href="#Review">Review</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;id&quot;:2,&quot;candidate_id&quot;:&quot;ruto&quot;,&quot;user&quot;:&quot;Verified User&quot;,&quot;rating&quot;:3,&quot;text&quot;:&quot;Updated view after the debate.&quot;,&quot;date&quot;:&quot;2026-06-26&quot;}</code></pre>
+    <h4 class="field-label">400</h4>
+    Missing or invalid review information
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;INVALID_REVIEW&quot;,&quot;message&quot;:&quot;rating and text are required&quot;}</code></pre>
+    <h4 class="field-label">404</h4>
+    No candidate exists with the given candidate ID, or no review with the given review ID exists for that candidate
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;NOT_FOUND&quot;,&quot;message&quot;:&quot;Review not found&quot;}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="candidatesGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /candidates</code></pre></div>
+    <div class="method-summary">Return the list of candidates with their profiles and policy positions (<span class="nickname">candidatesGet</span>)</div>
+    <div class="method-notes"></div>
 
-      <h4 class="field-label">400</h4>
-      Missing or invalid review information
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"INVALID_REVIEW","message":"rating and text are required"}</code></pre>
 
-      <h4 class="field-label">404</h4>
-      No candidate exists with the given candidate ID, or no review with the given review ID exists for that candidate
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"NOT_FOUND","message":"Review not found"}</code></pre>
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#Candidate">Candidate</a>]
+      
     </div>
 
-    <hr/>
+    <!--Todo: process Response Object and its headers, schema, examples -->
 
-    <div class="method"><a name="candidatesGet"></a>
-      <div class="method-path">
-        <a class="up" href="#__Methods">Up</a>
-        <pre class="get"><code class="huge"><span class="http-method">get</span> /candidates</code></pre>
-      </div>
-      <div class="method-summary">Return the list of candidates with their profiles and policy positions (<span class="nickname">candidatesGet</span>)</div>
-      <div class="method-notes"></div>
-
-      <h3 class="field-label">Return type</h3>
-      <div class="return-type">
-        array[<a href="#Candidate">Candidate</a>]
-      </div>
-
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>[ {
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[ {
+  "id" : "ruto",
+  "initials" : "WR",
+  "name" : "Dr. William Ruto",
+  "party" : "Kenya Kwanza Alliance / UDA",
+  "description" : "Current President of Kenya with experience in national government.",
+  "experience" : "Current President of Kenya (2022-2026), former Deputy President (2013-2022).",
+  "vision" : "The Bottom-Up Economic Transformation Agenda (BETA).",
+  "fiscal" : "Expanding the formal tax base to manage public debt.",
+  "agriculture" : "Subsidized farm inputs and fertilizer distribution.",
+  "governance" : "Protecting and increasing funding to the 47 counties.",
+  "cost_of_living" : "Cutting consumer levies and production taxes.",
+  "average_rating" : 4,
+  "review_count" : 1
+}, {
   "id" : "ruto",
   "initials" : "WR",
   "name" : "Dr. William Ruto",
@@ -527,46 +566,44 @@
   "review_count" : 1
 } ]</code></pre>
 
-      <h3 class="field-label">Produces</h3>
-      This API call produces the following media types according to the <span class="header">Accept</span> request header;
-      the media type will be conveyed by the <span class="header">Content-Type</span> response header.
-      <ul>
-        <li><code>application/json</code></li>
-      </ul>
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
 
-      <h3 class="field-label">Responses</h3>
-      <h4 class="field-label">200</h4>
-      A list of candidates
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    A list of candidates
+        
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[{&quot;id&quot;:&quot;ruto&quot;,&quot;initials&quot;:&quot;WR&quot;,&quot;name&quot;:&quot;Dr. William Ruto&quot;,&quot;party&quot;:&quot;Kenya Kwanza Alliance / UDA&quot;,&quot;description&quot;:&quot;Current President of Kenya with experience in national government.&quot;,&quot;experience&quot;:&quot;Current President of Kenya (2022-2026), former Deputy President (2013-2022).&quot;,&quot;vision&quot;:&quot;The Bottom-Up Economic Transformation Agenda (BETA).&quot;,&quot;fiscal&quot;:&quot;Expanding the formal tax base to manage public debt.&quot;,&quot;agriculture&quot;:&quot;Subsidized farm inputs and fertilizer distribution.&quot;,&quot;governance&quot;:&quot;Protecting and increasing funding to the 47 counties.&quot;,&quot;cost_of_living&quot;:&quot;Cutting consumer levies and production taxes.&quot;,&quot;average_rating&quot;:4,&quot;review_count&quot;:1}]</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="ralliesGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /rallies</code></pre></div>
+    <div class="method-summary">Return civic events and rallies (<span class="nickname">ralliesGet</span>)</div>
+    <div class="method-notes">Sample civic event feed for Group 12 (accessibility and traffic planning). Dates are generated relative to today in Nairobi time (UTC+3), so the feed always contains current and upcoming events. Results are ordered by date. Use upcoming=true to hide events that have already ended.</div>
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">upcoming (optional)</div>
       
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>[{"id":"ruto","initials":"WR","name":"Dr. William Ruto","party":"Kenya Kwanza Alliance / UDA","description":"Current President of Kenya with experience in national government.","experience":"Current President of Kenya (2022-2026), former Deputy President (2013-2022).","vision":"The Bottom-Up Economic Transformation Agenda (BETA).","fiscal":"Expanding the formal tax base to manage public debt.","agriculture":"Subsidized farm inputs and fertilizer distribution.","governance":"Protecting and increasing funding to the 47 counties.","cost_of_living":"Cutting consumer levies and production taxes.","average_rating":4,"review_count":1}]</code></pre>
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; When true, return only events that have not ended yet. When false or omitted, return every event in the feed. </div>    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#Rally">Rally</a>]
+      
     </div>
 
-    <hr/>
-
-    <div class="method"><a name="ralliesGet"></a>
-      <div class="method-path">
-        <a class="up" href="#__Methods">Up</a>
-        <pre class="get"><code class="huge"><span class="http-method">get</span> /rallies</code></pre>
-      </div>
-      <div class="method-summary">Return civic events and rallies (<span class="nickname">ralliesGet</span>)</div>
-      <div class="method-notes">Sample civic event feed for Group 12 (accessibility and traffic planning). Dates are generated relative to today in Nairobi time (UTC+3), so the feed always contains current and upcoming events. Results are ordered by date. Use upcoming=true to hide events that have already ended.</div>
-
-      <h3 class="field-label">Query parameters</h3>
-      <div class="field-items">
-        <div class="param">upcoming (optional)</div>
-        <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; When true, return only events that have not ended yet. When false or omitted, return every event in the feed. </div>
-      </div>
-
-      <h3 class="field-label">Return type</h3>
-      <div class="return-type">
-        array[<a href="#Rally">Rally</a>]
-      </div>
-
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>[ {
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[ {
   "id" : "rally_07",
   "title" : "National Presidential Final Pitch & Mega Civic Mobilization",
   "organizer" : "Consortium of Registered Political Parties & Civic Engagement Forum",
@@ -584,55 +621,53 @@
   "eventType" : "National Mega Campaign Rally"
 } ]</code></pre>
 
-      <h3 class="field-label">Produces</h3>
-      This API call produces the following media types according to the <span class="header">Accept</span> request header;
-      the media type will be conveyed by the <span class="header">Content-Type</span> response header.
-      <ul>
-        <li><code>application/json</code></li>
-      </ul>
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
 
-      <h3 class="field-label">Responses</h3>
-      <h4 class="field-label">200</h4>
-      A list of civic events
-      <a href="#Rally">Rally</a>
-      <h4 class="field-label">400</h4>
-      The upcoming parameter is not true or false
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"INVALID_PARAMETER","message":"upcoming must be true or false"}</code></pre>
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    A list of civic events
+        <a href="#Rally">Rally</a>
+    <h4 class="field-label">400</h4>
+    The upcoming parameter is not true or false
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;INVALID_PARAMETER&quot;,&quot;message&quot;:&quot;upcoming must be true or false&quot;}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="ralliesRallyIdTravelGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /rallies/{rallyId}/travel</code></pre></div>
+    <div class="method-summary">Travel advice for getting to a civic event (<span class="nickname">ralliesRallyIdTravelGet</span>)</div>
+    <div class="method-notes">Combines our rally data with Group 10&#39;s landmarks and rides. Returns the fastest and cheapest ride from the voter&#39;s starting landmark to the venue, a crowd-pressure level, a suggested leave-by time and, when the venue is likely to be busy, a walkable alternative drop-off. Everything is an estimate: fares and ETAs reflect current conditions, not the event time, and crowd pressure is a rule-based estimate from expected attendance and the number of ride options, not live demand.</div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">rallyId (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the rally </div>    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">from (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Id of the landmark the voter is starting from (from GET /transport/landmarks) </div>    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#TravelAdvice">TravelAdvice</a>
+      
     </div>
 
-    <hr/>
-
-    <div class="method"><a name="ralliesRallyIdTravelGet"></a>
-      <div class="method-path">
-        <a class="up" href="#__Methods">Up</a>
-        <pre class="get"><code class="huge"><span class="http-method">get</span> /rallies/{rallyId}/travel</code></pre>
-      </div>
-      <div class="method-summary">Travel advice for getting to a civic event (<span class="nickname">ralliesRallyIdTravelGet</span>)</div>
-      <div class="method-notes">Combines our rally data with Group 10's landmarks and rides. Returns the fastest and cheapest ride from the voter's starting landmark to the venue, a crowd-pressure level, a suggested leave-by time and, when the venue is likely to be busy, a walkable alternative drop-off. Everything is an estimate: fares and ETAs reflect current conditions, not the event time, and crowd pressure is a rule-based estimate from expected attendance and the number of ride options, not live demand.</div>
-
-      <h3 class="field-label">Path parameters</h3>
-      <div class="field-items">
-        <div class="param">rallyId (required)</div>
-        <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the rally </div>
-      </div>
-
-      <h3 class="field-label">Query parameters</h3>
-      <div class="field-items">
-        <div class="param">from (required)</div>
-        <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Id of the landmark the voter is starting from (from GET /transport/landmarks) </div>
-      </div>
-
-      <h3 class="field-label">Return type</h3>
-      <div class="return-type">
-        <a href="#TravelAdvice">TravelAdvice</a>
-      </div>
-
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
   "rally" : { "id" : "rally_07", "venue" : "Nyayo National Stadium", "date" : "2026-11-14", "startTime" : "10:30", "endTime" : "17:30", "expectedCrowd" : "40,000+" },
   "from" : { "id" : "1", "name" : "cbd" },
   "rides" : {
@@ -652,156 +687,331 @@
   "disclaimer" : "Estimates only. Ride fares and ETAs reflect current conditions, not the event time. Crowd pressure is a rule-based estimate from expected attendance and the number of ride options, not live demand."
 }</code></pre>
 
-      <h3 class="field-label">Produces</h3>
-      This API call produces the following media types according to the <span class="header">Accept</span> request header;
-      the media type will be conveyed by the <span class="header">Content-Type</span> response header.
-      <ul>
-        <li><code>application/json</code></li>
-      </ul>
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
 
-      <h3 class="field-label">Responses</h3>
-      <h4 class="field-label">200</h4>
-      Travel advice for the rally
-      <a href="#TravelAdvice">TravelAdvice</a>
-      <h4 class="field-label">400</h4>
-      The from parameter is missing
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"INVALID_PARAMETER","message":"from (a landmark id) is required"}</code></pre>
-      <h4 class="field-label">404</h4>
-      No rally or no landmark exists with the given id
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"NOT_FOUND","message":"Rally not found"}</code></pre>
-      <h4 class="field-label">409</h4>
-      The event has already ended
-      <a href="#Error">Error</a>
-      <h3 class="field-label">Example data</h3>
-      <div class="example-data-content-type">Content-Type: application/json</div>
-      <pre class="example"><code>{"code":"EVENT_ENDED","message":"This event has already ended"}</code></pre>
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    Travel advice for the rally
+        <a href="#TravelAdvice">TravelAdvice</a>
+    <h4 class="field-label">400</h4>
+    The from parameter is missing
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;INVALID_PARAMETER&quot;,&quot;message&quot;:&quot;from (a landmark id) is required&quot;}</code></pre>
+    <h4 class="field-label">404</h4>
+    No rally or no landmark exists with the given id
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;NOT_FOUND&quot;,&quot;message&quot;:&quot;Rally not found&quot;}</code></pre>
+    <h4 class="field-label">409</h4>
+    The event has already ended
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;EVENT_ENDED&quot;,&quot;message&quot;:&quot;This event has already ended&quot;}</code></pre>
+    <h4 class="field-label">502</h4>
+    Group 10&#39;s landmarks or rides could not be reached
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;message&quot;:&quot;Partner data unavailable&quot;}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="pollingStationsGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /polling-stations</code></pre></div>
+    <div class="method-summary">Return polling stations (<span class="nickname">pollingStationsGet</span>)</div>
+    <div class="method-notes">Our own list of polling stations, grouped by area. This is a team sample, not the official IEBC register: stations with verified true were copied from the IEBC polling station list, all others have not been checked against it. Coordinates are approximate (one point per area), not the school gate.</div>
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#PollingStation">PollingStation</a>]
+      
     </div>
 
-    <hr/>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>[ {
+  "id" : "ps_001",
+  "name" : "Westlands Primary School",
+  "area" : "Westlands",
+  "county" : "Nairobi City",
+  "constituency" : "Westlands",
+  "ward" : "Parklands/Highridge",
+  "location" : { "lat" : -1.2673, "lng" : 36.8118 },
+  "locationApproximate" : true,
+  "verified" : true
+} ]</code></pre>
 
-    <h2><a name="__Models">Models</a></h2>
-    [ Jump to <a href="#__Methods">Methods</a> ]
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
 
-    <h3>Table of Contents</h3>
-    <ol>
-      <li><a href="#Candidate"><code>Candidate</code></a></li>
-      <li><a href="#CreateReviewRequest"><code>CreateReviewRequest</code></a></li>
-      <li><a href="#Error"><code>Error</code></a></li>
-      <li><a href="#Rally"><code>Rally</code></a></li>
-      <li><a href="#Review"><code>Review</code></a></li>
-      <li><a href="#TravelAdvice"><code>TravelAdvice</code></a></li>
-    </ol>
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    A list of polling stations
+        <a href="#PollingStation">PollingStation</a>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="pollingStationsStationIdNearestLandmarkGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /polling-stations/{stationId}/nearest-landmark</code></pre></div>
+    <div class="method-summary">Nearest Group 10 landmark to a polling station (<span class="nickname">pollingStationsStationIdNearestLandmarkGet</span>)</div>
+    <div class="method-notes">Group 10&#39;s rides endpoint only understands its own landmarks, so to compare ride prices to a polling station we find the landmark nearest to it and request rides for that landmark. Prices are therefore for the landmark area, not the exact station. Returns 422 when no landmark is within 15 km. Uses the same saved landmark list as GET /transport/landmarks if Group 10 is briefly unreachable.</div>
 
-    <div class="model">
-      <h3><a name="Candidate"><code>Candidate</code></a> <a class="up" href="#__Models">Up</a></h3>
-      <div class="field-items">
-        <div class="param">id </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: ruto</span></div>
-        <div class="param">initials (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: WR</span></div>
-        <div class="param">name </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Dr. William Ruto</span></div>
-        <div class="param">party (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Kenya Kwanza Alliance / UDA</span></div>
-        <div class="param">description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Current President of Kenya with experience in national government.</span></div>
-        <div class="param">experience (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Current President of Kenya (2022-2026), former Deputy President (2013-2022).</span></div>
-        <div class="param">vision (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: The Bottom-Up Economic Transformation Agenda (BETA).</span></div>
-        <div class="param">fiscal (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Expanding the formal tax base to manage public debt.</span></div>
-        <div class="param">agriculture (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Subsidized farm inputs and fertilizer distribution.</span></div>
-        <div class="param">governance (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Protecting and increasing funding to the 47 counties.</span></div>
-        <div class="param">cost_of_living (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Cutting consumer levies and production taxes.</span></div>
-        <div class="param">average_rating </div><div class="param-desc"><span class="param-type"><a href="#float">Float</a></span> format: float</div>
-        <div class="param-desc"><span class="param-type">example: 4</span></div>
-        <div class="param">review_count </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: 1</span></div>
-      </div>
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">stationId (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Unique identifier of the polling station </div>    </div>  <!-- field-items -->
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#NearestLandmark">NearestLandmark</a>
+      
     </div>
 
-    <div class="model">
-      <h3><a name="CreateReviewRequest"><code>CreateReviewRequest</code></a> <a class="up" href="#__Models">Up</a></h3>
-      <div class="field-items">
-        <div class="param">user (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Name of the reviewer. Defaults to Anonymous Voter if omitted. </div>
-        <div class="param-desc"><span class="param-type">example: Verified User</span></div>
-        <div class="param">rating </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: 5</span></div>
-        <div class="param">text </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: The candidate has clearly communicated their policy priorities.</span></div>
-      </div>
-    </div>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{
+  "station" : { "id" : "ps_001", "name" : "Westlands Primary School", "area" : "Westlands" },
+  "landmark" : { "id" : "2", "name" : "westlands", "location" : { "lat" : -1.2673, "lng" : 36.811 } },
+  "distanceKm" : 0.1
+}</code></pre>
 
-    <div class="model">
-      <h3><a name="Error"><code>Error</code></a> <a class="up" href="#__Models">Up</a></h3>
-      <div class="field-items">
-        <div class="param">code </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: NOT_FOUND</span></div>
-        <div class="param">message </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Candidate not found</span></div>
-      </div>
-    </div>
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+    </ul>
 
-    <div class="model">
-      <h3><a name="Rally"><code>Rally</code></a> <a class="up" href="#__Models">Up</a></h3>
-      <div class="field-items">
-        <div class="param">id </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: rally_07</span></div>
-        <div class="param">title </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: National Presidential Final Pitch & Mega Civic Mobilization</span></div>
-        <div class="param">organizer </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param">candidate (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param">party (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param">venue </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Nyayo National Stadium</span></div>
-        <div class="param">location </div><div class="param-desc"><span class="param-type">Object</span> </div>
-        <div class="param">date </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> format: YYYY-MM-DD</div>
-        <div class="param">startTime </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> format: HH:MM</div>
-        <div class="param">endTime </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> format: HH:MM</div>
-        <div class="param">expectedCrowd </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param">eventType </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-      </div>
-    </div>
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    The nearest landmark
+        <a href="#NearestLandmark">NearestLandmark</a>
+    <h4 class="field-label">404</h4>
+    No polling station exists with the given id
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;NOT_FOUND&quot;,&quot;message&quot;:&quot;Polling station not found&quot;}</code></pre>
+    <h4 class="field-label">422</h4>
+    No landmark within 15 km of the polling station
+        <a href="#Error">Error</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;code&quot;:&quot;NO_NEARBY_LANDMARK&quot;,&quot;message&quot;:&quot;No ride landmark within 15 km of this polling station&quot;}</code></pre>
+    <h4 class="field-label">502</h4>
+    Group 10&#39;s landmarks could not be reached and no saved copy exists
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{&quot;message&quot;:&quot;Partner data unavailable&quot;}</code></pre>
+  </div> <!-- method -->
+  <hr/>
 
-    <div class="model">
-      <h3><a name="Review"><code>Review</code></a> <a class="up" href="#__Models">Up</a></h3>
-      <div class="field-items">
-        <div class="param">id </div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span> format: int64</div>
-        <div class="param-desc"><span class="param-type">example: 1</span></div>
-        <div class="param">candidate_id </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: ruto</span></div>
-        <div class="param">user </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Anonymous Voter</span></div>
-        <div class="param">rating </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: 4</span></div>
-        <div class="param">text </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-        <div class="param-desc"><span class="param-type">example: Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.</span></div>
-        <div class="param">date </div><div class="param-desc"><span class="param-type"><a href="#date">date</a></span> format: date</div>
-        <div class="param-desc"><span class="param-type">example: Thu Jun 25 00:00:00 GMT 2026</span></div>
-      </div>
-    </div>
+  <h2><a name="__Models">Models</a></h2>
+  [ Jump to <a href="#__Methods">Methods</a> ]
 
-    <div class="model">
-      <h3><a name="TravelAdvice"><code>TravelAdvice</code></a> <a class="up" href="#__Models">Up</a></h3>
-      <div class="field-items">
-        <div class="param">rally </div><div class="param-desc"><span class="param-type">Object</span> </div>
-        <div class="param">from </div><div class="param-desc"><span class="param-type">Object</span> </div>
-        <div class="param">rides </div><div class="param-desc"><span class="param-type">Object</span> </div>
-        <div class="param">pressure </div><div class="param-desc"><span class="param-type">Object</span> </div>
-        <div class="param">leaveBy </div><div class="param-desc"><span class="param-type">Object</span> </div>
-        <div class="param">alternativeDropoff (optional)</div><div class="param-desc"><span class="param-type">Object</span> </div>
-        <div class="param">disclaimer </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
-      </div>
-    </div>
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#Candidate"><code>Candidate</code></a></li>
+    <li><a href="#CreateReviewRequest"><code>CreateReviewRequest</code></a></li>
+    <li><a href="#Error"><code>Error</code></a></li>
+    <li><a href="#NearestLandmark"><code>NearestLandmark</code></a></li>
+    <li><a href="#PollingStation"><code>PollingStation</code></a></li>
+    <li><a href="#Rally"><code>Rally</code></a></li>
+    <li><a href="#Review"><code>Review</code></a></li>
+    <li><a href="#Ride"><code>Ride</code></a></li>
+    <li><a href="#TravelAdvice"><code>TravelAdvice</code></a></li>
+  </ol>
+
+  <div class="model">
+    <h3><a name="Candidate"><code>Candidate</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">id </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: ruto</span></div>
+<div class="param">initials (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: WR</span></div>
+<div class="param">name </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Dr. William Ruto</span></div>
+<div class="param">party (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Kenya Kwanza Alliance / UDA</span></div>
+<div class="param">description (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Current President of Kenya with experience in national government.</span></div>
+<div class="param">experience (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Current President of Kenya (2022-2026), former Deputy President (2013-2022).</span></div>
+<div class="param">vision (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: The Bottom-Up Economic Transformation Agenda (BETA).</span></div>
+<div class="param">fiscal (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Expanding the formal tax base to manage public debt.</span></div>
+<div class="param">agriculture (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Subsidized farm inputs and fertilizer distribution.</span></div>
+<div class="param">governance (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Protecting and increasing funding to the 47 counties.</span></div>
+<div class="param">cost_of_living (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Cutting consumer levies and production taxes.</span></div>
+<div class="param">average_rating </div><div class="param-desc"><span class="param-type"><a href="#float">Float</a></span>  format: float</div>
+          <div class="param-desc"><span class="param-type">example: 4</span></div>
+<div class="param">review_count </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="CreateReviewRequest"><code>CreateReviewRequest</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">user (optional)</div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Name of the reviewer. Defaults to Anonymous Voter if omitted. </div>
+          <div class="param-desc"><span class="param-type">example: Verified User</span></div>
+<div class="param">rating </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: 5</span></div>
+<div class="param">text </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: The candidate has clearly communicated their policy priorities.</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="Error"><code>Error</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">code </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: NOT_FOUND</span></div>
+<div class="param">message </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Candidate not found</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="NearestLandmark"><code>NearestLandmark</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">station </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span> id, name and area of the polling station.</div>
+          <div class="param-desc"><span class="param-type">example: id ps_001, name Westlands Primary School, area Westlands</span></div>
+<div class="param">landmark </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span> The Group 10 landmark nearest to the station (id, name, location).</div>
+          <div class="param-desc"><span class="param-type">example: id 2, name westlands</span></div>
+<div class="param">distanceKm </div><div class="param-desc"><span class="param-type"><a href="#double">Double</a></span> Straight-line distance from the station to the landmark.</div>
+          <div class="param-desc"><span class="param-type">example: 0.1</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="PollingStation"><code>PollingStation</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">id </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
+          <div class="param-desc"><span class="param-type">example: ps_001</span></div>
+<div class="param">name </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
+          <div class="param-desc"><span class="param-type">example: Westlands Primary School</span></div>
+<div class="param">area </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Neighbourhood the station is listed under.</div>
+          <div class="param-desc"><span class="param-type">example: Westlands</span></div>
+<div class="param">county </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> </div>
+          <div class="param-desc"><span class="param-type">example: Nairobi City</span></div>
+<div class="param">constituency </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> May be null.</div>
+          <div class="param-desc"><span class="param-type">example: Westlands</span></div>
+<div class="param">ward </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> May be null.</div>
+          <div class="param-desc"><span class="param-type">example: Parklands/Highridge</span></div>
+<div class="param">location </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span> Approximate point for the area (lat, lng), not the school gate.</div>
+          <div class="param-desc"><span class="param-type">example: lat -1.2673, lng 36.8118</span></div>
+<div class="param">locationApproximate </div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> </div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+<div class="param">verified </div><div class="param-desc"><span class="param-type"><a href="#boolean">Boolean</a></span> true only if the name was copied from the IEBC polling station list.</div>
+          <div class="param-desc"><span class="param-type">example: true</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="Rally"><code>Rally</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">id </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: rally_07</span></div>
+<div class="param">title </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: National Presidential Final Pitch &amp; Mega Civic Mobilization</span></div>
+<div class="param">organizer </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Consortium of Registered Political Parties &amp; Civic Engagement Forum</span></div>
+<div class="param">candidate </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Presidential Candidates Joint Civic Appearance</span></div>
+<div class="param">party </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Multi-Party Civic Initiative</span></div>
+<div class="param">venue </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Nyayo National Stadium</span></div>
+<div class="param">location </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span> Venue coordinates (lat, lng). </div>
+          <div class="param-desc"><span class="param-type">example: lat -1.3039, lng 36.8242</span></div>
+<div class="param">date </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Event date in Nairobi time (YYYY-MM-DD). </div>
+          <div class="param-desc"><span class="param-type">example: 2026-11-14</span></div>
+<div class="param">startTime </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Nairobi time, 24-hour (HH:MM). </div>
+          <div class="param-desc"><span class="param-type">example: 10:30</span></div>
+<div class="param">endTime </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Nairobi time, 24-hour (HH:MM). </div>
+          <div class="param-desc"><span class="param-type">example: 17:30</span></div>
+<div class="param">expectedCrowd </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span> Approximate attendance as text, not a number. </div>
+          <div class="param-desc"><span class="param-type">example: 40,000+</span></div>
+<div class="param">eventType </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: National Mega Campaign Rally</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="Review"><code>Review</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">id </div><div class="param-desc"><span class="param-type"><a href="#long">Long</a></span>  format: int64</div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+<div class="param">candidate_id </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: ruto</span></div>
+<div class="param">user </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Anonymous Voter</span></div>
+<div class="param">rating </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: 4</span></div>
+<div class="param">text </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Clear focus on devolution structural systems, but need more clarity on agricultural subsidy time-tables.</span></div>
+<div class="param">date </div><div class="param-desc"><span class="param-type"><a href="#date">date</a></span>  format: date</div>
+          <div class="param-desc"><span class="param-type">example: Thu Jun 25 00:00:00 GMT 2026</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="Ride"><code>Ride</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">id </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: r1</span></div>
+<div class="param">providerName </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Bolt</span></div>
+<div class="param">rideType </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Bolt Boda</span></div>
+<div class="param">fare </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: amount 99, currency KES</span></div>
+<div class="param">etaMinutes </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: 5</span></div>
+<div class="param">capacity </div><div class="param-desc"><span class="param-type"><a href="#integer">Integer</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: 1</span></div>
+    </div>  <!-- field-items -->
+  </div>
+  <div class="model">
+    <h3><a name="TravelAdvice"><code>TravelAdvice</code></a> <a class="up" href="#__Models">Up</a></h3>
+    
+    <div class="field-items">
+      <div class="param">rally </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span> The event. </div>
+          <div class="param-desc"><span class="param-type">example: id rally_07, venue Nyayo National Stadium, date, startTime, endTime, expectedCrowd</span></div>
+<div class="param">from </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span> The landmark the voter starts from. </div>
+          <div class="param-desc"><span class="param-type">example: id 1, name cbd</span></div>
+<div class="param">rides </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span> Usable ride options (capacity 0, such as parcel delivery, is ignored). fastest and cheapest are Ride objects, or null. </div>
+          <div class="param-desc"><span class="param-type">example: count 3, fastest, cheapest</span></div>
+<div class="param">pressure </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span> Rule-based estimate: attendance sets the base level (under 1,500 low, 1,500 to 4,999 medium, 5,000 and over high), raised one level if rides look scarce. </div>
+          <div class="param-desc"><span class="param-type">example: level high, expectedCrowdNumber 40000, bufferMinutes 60, reasons</span></div>
+<div class="param">leaveBy </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span> Event start minus the fastest ride ETA minus the buffer (Nairobi time). </div>
+          <div class="param-desc"><span class="param-type">example: date 2026-11-14, time 09:25, basedOnEtaMinutes 5, bufferMinutes 60, leaveNow false</span></div>
+<div class="param">alternativeDropoff </div><div class="param-desc"><span class="param-type"><a href="#object">Object</a></span> A walkable landmark 0.4 km to 2 km from the venue that is at least 15% cheaper or 3 minutes quicker. Only for medium or high pressure; otherwise null. </div>
+          <div class="param-desc"><span class="param-type">example: landmark, distanceKm 1, walkMinutes 11, fastest, cheapest, savesFare 21, savesMinutes 1</span></div>
+<div class="param">disclaimer </div><div class="param-desc"><span class="param-type"><a href="#string">String</a></span>  </div>
+          <div class="param-desc"><span class="param-type">example: Estimates only.</span></div>
+    </div>  <!-- field-items -->
+  </div>
   </body>
 </html>
