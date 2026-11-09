@@ -306,110 +306,364 @@ app.get('/api/transport/rides', async (req, res) => {
   }
 });
 
-// GET /api/rallies -> Raw civic event feed for Group 12
+// Civic event feed for Group 12 (accessibility / traffic planning).
+// These are sample events. Dates are generated from dayOffset relative to today
+// in Nairobi time (UTC+3), so the feed always has current and upcoming events.
+// Swap RALLY_TEMPLATES for a real data source when one exists.
+const RALLY_TEMPLATES = [
+  {
+    id: "rally_01",
+    title: "Universal Healthcare Delivery & Medical Workers Forum",
+    organizer: "United Democratic Alliance (UDA) Presidential Secretariat",
+    candidate: "H.E. Dr. William Ruto",
+    party: "United Democratic Alliance (UDA)",
+    venue: "Kenyatta National Hospital (KMTC Grounds)",
+    location: { lat: -1.3005, lng: 36.8073 },
+    dayOffset: 0,
+    startTime: "14:00",
+    endTime: "17:00",
+    expectedCrowd: "6,000+",
+    eventType: "Presidential Townhall & Policy Address"
+  },
+  {
+    id: "rally_02",
+    title: "Civil Service & Public Sector Management Keynote",
+    organizer: "Jubilee / United Progressive Alliance Presidential Campaign",
+    candidate: "Dr. Fred Matiang'i",
+    party: "United Progressive Alliance / Jubilee Coalition",
+    venue: "The Nairobi Hospital (Argwings Kodhek Grounds)",
+    location: { lat: -1.2965, lng: 36.8041 },
+    dayOffset: 1,
+    startTime: "10:00",
+    endTime: "12:30",
+    expectedCrowd: "1,500",
+    eventType: "Civic Dialogue & Policy Address"
+  },
+  {
+    id: "rally_03",
+    title: "Rule of Law, Constitutional Integrity & Higher Education Charter",
+    organizer: "National Integrity Secretariat & Civic Alliance",
+    candidate: "Justice (Rtd) David Maraga",
+    party: "Constitutional Integrity Alliance",
+    venue: "Aga Khan University Hospital (Parklands)",
+    location: { lat: -1.2618, lng: 36.8229 },
+    dayOffset: 2,
+    startTime: "15:00",
+    endTime: "18:00",
+    expectedCrowd: "2,000",
+    eventType: "Academic Townhall & Public Lecture"
+  },
+  {
+    id: "rally_04",
+    title: "Devolution Strengthening & Senior Citizens Welfare Address",
+    organizer: "Wiper Democratic Movement National Secretariat",
+    candidate: "H.E. Kalonzo Musyoka",
+    party: "Wiper Democratic Movement / Ukombozi Alliance",
+    venue: "The Karen Hospital (Karen Road)",
+    location: { lat: -1.3328, lng: 36.7198 },
+    dayOffset: 3,
+    startTime: "11:00",
+    endTime: "13:30",
+    expectedCrowd: "1,000",
+    eventType: "Community Engagement & Party Delegates Meeting"
+  },
+  {
+    id: "rally_05",
+    title: "Child Welfare, Public Health Accountability & Human Rights Dialogue",
+    organizer: "Defenders of the Constitution Secretariat",
+    candidate: "Sen. Okiya Omtatah Okoiti",
+    party: "Social Justice Coalition",
+    venue: "Gertrude's Children's Hospital (Muthaiga)",
+    location: { lat: -1.2581, lng: 36.8361 },
+    dayOffset: 4,
+    startTime: "09:30",
+    endTime: "12:00",
+    expectedCrowd: "800",
+    eventType: "Public Interest Roundtable"
+  },
+  {
+    id: "rally_06",
+    title: "Private Sector Growth, Sports Infrastructure & Youth Enterprise Summit",
+    organizer: "People's Dialogue Forum & Business Coalition",
+    candidate: "United Opposition Consultative Secretariat",
+    party: "United Opposition Platform",
+    venue: "Parklands Sports Club (Ojijo Road)",
+    location: { lat: -1.2673, lng: 36.8142 },
+    dayOffset: 5,
+    startTime: "16:00",
+    endTime: "19:00",
+    expectedCrowd: "2,500",
+    eventType: "Economic Keynote & Business Assembly"
+  },
+  {
+    id: "rally_07",
+    title: "National Presidential Final Pitch & Mega Civic Mobilization",
+    organizer: "Consortium of Registered Political Parties & Civic Engagement Forum",
+    candidate: "Presidential Candidates Joint Civic Appearance",
+    party: "Multi-Party Civic Initiative",
+    venue: "Nyayo National Stadium",
+    location: { lat: -1.3039, lng: 36.8242 },
+    dayOffset: 6,
+    startTime: "10:30",
+    endTime: "17:30",
+    expectedCrowd: "40,000+",
+    eventType: "National Mega Campaign Rally"
+  }
+];
+
+const NAIROBI_OFFSET_MS = 3 * 60 * 60 * 1000;
+
+function nairobiNow() {
+  const iso = new Date(Date.now() + NAIROBI_OFFSET_MS).toISOString(); // 2026-11-08T15:43:00.000Z
+  return { date: iso.slice(0, 10), time: iso.slice(11, 16) };
+}
+
+function addDays(isoDate, days) {
+  const d = new Date(`${isoDate}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+function getRallies() {
+  const today = nairobiNow().date;
+  return RALLY_TEMPLATES.map(({ dayOffset, ...rally }) => ({
+    ...rally,
+    date: addDays(today, dayOffset)
+  }));
+}
+
+// GET /api/rallies            -> every sample event
+// GET /api/rallies?upcoming=true -> only events that have not ended yet
 app.get('/api/rallies', (req, res) => {
-  const rallies = [
-    {
-      id: "rally_01",
-      title: "Universal Healthcare Delivery & Medical Workers Forum",
-      organizer: "United Democratic Alliance (UDA) Presidential Secretariat",
-      candidate: "H.E. Dr. William Ruto",
-      party: "United Democratic Alliance (UDA)",
-      venue: "Kenyatta National Hospital (KMTC Grounds)",
-      location: { lat: -1.3005, lng: 36.8073 },
-      date: "2026-11-02",
-      startTime: "14:00",
-      endTime: "17:00",
-      expectedCrowd: "6,000+",
-      eventType: "Presidential Townhall & Policy Address"
-    },
-    {
-      id: "rally_02",
-      title: "Civil Service & Public Sector Management Keynote",
-      organizer: "Jubilee / United Progressive Alliance Presidential Campaign",
-      candidate: "Dr. Fred Matiang'i",
-      party: "United Progressive Alliance / Jubilee Coalition",
-      venue: "The Nairobi Hospital (Argwings Kodhek Grounds)",
-      location: { lat: -1.2965, lng: 36.8041 },
-      date: "2026-11-03",
-      startTime: "10:00",
-      endTime: "12:30",
-      expectedCrowd: "1,500",
-      eventType: "Civic Dialogue & Policy Address"
-    },
-    {
-      id: "rally_03",
-      title: "Rule of Law, Constitutional Integrity & Higher Education Charter",
-      organizer: "National Integrity Secretariat & Civic Alliance",
-      candidate: "Justice (Rtd) David Maraga",
-      party: "Constitutional Integrity Alliance",
-      venue: "Aga Khan University Hospital (Parklands)",
-      location: { lat: -1.2618, lng: 36.8229 },
-      date: "2026-11-04",
-      startTime: "15:00",
-      endTime: "18:00",
-      expectedCrowd: "2,000",
-      eventType: "Academic Townhall & Public Lecture"
-    },
-    {
-      id: "rally_04",
-      title: "Devolution Strengthening & Senior Citizens Welfare Address",
-      organizer: "Wiper Democratic Movement National Secretariat",
-      candidate: "H.E. Kalonzo Musyoka",
-      party: "Wiper Democratic Movement / Ukombozi Alliance",
-      venue: "The Karen Hospital (Karen Road)",
-      location: { lat: -1.3328, lng: 36.7198 },
-      date: "2026-11-05",
-      startTime: "11:00",
-      endTime: "13:30",
-      expectedCrowd: "1,000",
-      eventType: "Community Engagement & Party Delegates Meeting"
-    },
-    {
-      id: "rally_05",
-      title: "Child Welfare, Public Health Accountability & Human Rights Dialogue",
-      organizer: "Defenders of the Constitution Secretariat",
-      candidate: "Sen. Okiya Omtatah Okoiti",
-      party: "Social Justice Coalition",
-      venue: "Gertrude's Children's Hospital (Muthaiga)",
-      location: { lat: -1.2581, lng: 36.8361 },
-      date: "2026-11-06",
-      startTime: "09:30",
-      endTime: "12:00",
-      expectedCrowd: "800",
-      eventType: "Public Interest Roundtable"
-    },
-    {
-      id: "rally_06",
-      title: "Private Sector Growth, Sports Infrastructure & Youth Enterprise Summit",
-      organizer: "People's Dialogue Forum & Business Coalition",
-      candidate: "United Opposition Consultative Secretariat",
-      party: "United Opposition Platform",
-      venue: "Parklands Sports Club (Ojijo Road)",
-      location: { lat: -1.2673, lng: 36.8142 },
-      date: "2026-11-07",
-      startTime: "16:00",
-      endTime: "19:00",
-      expectedCrowd: "2,500",
-      eventType: "Economic Keynote & Business Assembly"
-    },
-    {
-      id: "rally_07",
-      title: "National Presidential Final Pitch & Mega Civic Mobilization",
-      organizer: "Consortium of Registered Political Parties & Civic Engagement Forum",
-      candidate: "Presidential Candidates Joint Civic Appearance",
-      party: "Multi-Party Civic Initiative",
-      venue: "Nyayo National Stadium",
-      location: { lat: -1.3039, lng: 36.8242 },
-      date: "2026-11-08",
-      startTime: "10:30",
-      endTime: "17:30",
-      expectedCrowd: "40,000+",
-      eventType: "National Mega Campaign Rally"
-    }
-  ];
+  const { upcoming } = req.query;
+
+  if (upcoming !== undefined && upcoming !== 'true' && upcoming !== 'false') {
+    return sendError(res, 400, 'INVALID_PARAMETER', 'upcoming must be true or false');
+  }
+
+  let rallies = getRallies();
+
+  if (upcoming === 'true') {
+    const now = nairobiNow();
+    rallies = rallies.filter(r => r.date > now.date || (r.date === now.date && r.endTime > now.time));
+  }
 
   res.json(rallies);
+});
+
+// ---------------------------------------------------------------------------
+// Travel advice for a rally. Combines our rally data with Group 10's landmarks
+// and rides. Everything returned is an estimate (see "disclaimer").
+// ---------------------------------------------------------------------------
+const PARTNER_RETRY = { timeoutMs: 1500, retries: 2, delayMs: 200 };
+const PRESSURE_LEVELS = ['low', 'medium', 'high'];
+const PRESSURE_BUFFER_MINUTES = [15, 30, 60]; // arrive early for security, parking and queues
+const WALKING_KM_PER_HOUR = 5;
+const ALT_DROPOFF_MIN_KM = 0.4; // closer than this is effectively the venue itself
+const ALT_DROPOFF_MAX_KM = 2;   // further than this is too far to walk
+const ALT_MIN_FARE_SAVING_PERCENT = 15; // only suggest walking if it is worth it:
+const ALT_MIN_MINUTES_SAVING = 3;       // 15% cheaper, or at least 3 minutes quicker
+
+async function fetchPartnerJson(path) {
+  const response = await fetchWithRetry(
+    `${process.env.PARTNER_URL}${path}`,
+    {
+      headers: {
+        'X-API-Key': process.env.PARTNER_API_KEY,
+        'Content-Type': 'application/json'
+      }
+    },
+    PARTNER_RETRY
+  );
+  if (!response.ok) throw new Error(`Partner returned ${response.status}`);
+  return response.json();
+}
+
+// Reuses the same in-memory fallback as GET /api/transport/landmarks.
+async function loadLandmarks() {
+  try {
+    const list = await fetchPartnerJson('/landmarks');
+    if (!Array.isArray(list)) throw new Error('Unexpected landmarks format');
+    lastGoodLandmarks = { data: list, asof: new Date().toISOString() };
+    return list;
+  } catch (err) {
+    if (lastGoodLandmarks && Array.isArray(lastGoodLandmarks.data)) return lastGoodLandmarks.data;
+    throw err;
+  }
+}
+
+async function loadPassengerRides(from, to) {
+  const query = new URLSearchParams({
+    pickup_lat: from.lat,
+    pickup_lng: from.lng,
+    dropoff_lat: to.lat,
+    dropoff_lng: to.lng
+  });
+  const data = await fetchPartnerJson(`/rides?${query}`);
+  return (Array.isArray(data) ? data : []).filter(ride => ride.capacity > 0);
+}
+
+function coords(landmark) {
+  const lat = Number(landmark && landmark.location && landmark.location.lat);
+  const lng = Number(landmark && landmark.location && landmark.location.lng);
+  return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+}
+
+function distanceKm(a, b) {
+  const rad = (deg) => (deg * Math.PI) / 180;
+  const dLat = rad(b.lat - a.lat);
+  const dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 +
+    Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
+}
+
+function summariseRides(rides) {
+  const usable = rides.filter(r =>
+    Number.isFinite(r.etaMinutes) && r.fare && Number.isFinite(r.fare.amount));
+  if (usable.length === 0) return { count: rides.length, fastest: null, cheapest: null };
+  return {
+    count: rides.length,
+    fastest: usable.reduce((a, b) => (b.etaMinutes < a.etaMinutes ? b : a)),
+    cheapest: usable.reduce((a, b) => (b.fare.amount < a.fare.amount ? b : a))
+  };
+}
+
+function crowdNumber(text) {
+  const n = parseInt(String(text).replace(/[^\d]/g, ''), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+// Rule-based, not live demand: expected attendance sets the base level
+// (under 1,500 low, 1,500 to 4,999 medium, 5,000 and over high). If rides look
+// scarce (fewer than 3 options, none at all, or the fastest is over 10 minutes
+// away) the level goes up one step.
+function assessPressure(rally, summary) {
+  const crowd = crowdNumber(rally.expectedCrowd);
+  let level = crowd >= 5000 ? 2 : crowd >= 1500 ? 1 : 0;
+  const reasons = [`Expected attendance is ${rally.expectedCrowd}`];
+
+  const tight = [];
+  if (summary.count === 0) {
+    tight.push('No ride options were returned for this route');
+  } else {
+    if (summary.count < 3) {
+      tight.push(`Only ${summary.count} ride option${summary.count === 1 ? ' is' : 's are'} available`);
+    }
+    if (summary.fastest && summary.fastest.etaMinutes > 10) {
+      tight.push(`The fastest ride is ${summary.fastest.etaMinutes} minutes away`);
+    }
+  }
+  if (tight.length > 0) {
+    level = Math.min(level + 1, 2);
+    reasons.push(...tight);
+  }
+
+  return {
+    level: PRESSURE_LEVELS[level],
+    expectedCrowdNumber: crowd,
+    bufferMinutes: PRESSURE_BUFFER_MINUTES[level],
+    reasons
+  };
+}
+
+// Nearest landmark that is walkable from the venue, offered only when it is
+// clearly cheaper or quicker than going straight to the venue.
+async function findAlternativeDropoff(landmarks, pickup, pickupPoint, rally, mainSummary) {
+  let best = null;
+  for (const landmark of landmarks) {
+    const point = coords(landmark);
+    if (!point || String(landmark.id) === String(pickup.id)) continue;
+    const km = distanceKm(point, rally.location);
+    if (km < ALT_DROPOFF_MIN_KM || km > ALT_DROPOFF_MAX_KM) continue;
+    if (!best || km < best.km) best = { landmark, point, km };
+  }
+  if (!best) return null;
+
+  let altSummary;
+  try {
+    altSummary = summariseRides(await loadPassengerRides(pickupPoint, best.point));
+  } catch (err) {
+    return null; // the alternative is a bonus; never fail the whole request for it
+  }
+
+  const savesFare = mainSummary.cheapest && altSummary.cheapest
+    ? Math.max(0, mainSummary.cheapest.fare.amount - altSummary.cheapest.fare.amount) : 0;
+  const savesMinutes = mainSummary.fastest && altSummary.fastest
+    ? Math.max(0, mainSummary.fastest.etaMinutes - altSummary.fastest.etaMinutes) : 0;
+  const farePercent = mainSummary.cheapest && mainSummary.cheapest.fare.amount > 0
+    ? (savesFare / mainSummary.cheapest.fare.amount) * 100 : 0;
+  if (farePercent < ALT_MIN_FARE_SAVING_PERCENT && savesMinutes < ALT_MIN_MINUTES_SAVING) return null;
+
+  return {
+    landmark: { id: String(best.landmark.id), name: best.landmark.name },
+    distanceKm: Math.round(best.km * 10) / 10,
+    walkMinutes: Math.round((best.km / WALKING_KM_PER_HOUR) * 60),
+    fastest: altSummary.fastest,
+    cheapest: altSummary.cheapest,
+    savesFare,
+    savesMinutes
+  };
+}
+
+// GET /api/rallies/:rallyId/travel?from=<landmarkId>
+app.get('/api/rallies/:rallyId/travel', async (req, res) => {
+  const rally = getRallies().find(r => r.id === req.params.rallyId);
+  if (!rally) return sendError(res, 404, 'NOT_FOUND', 'Rally not found');
+
+  const fromId = typeof req.query.from === 'string' ? req.query.from.trim() : '';
+  if (!fromId) return sendError(res, 400, 'INVALID_PARAMETER', 'from (a landmark id) is required');
+
+  const startMs = Date.parse(`${rally.date}T${rally.startTime}:00+03:00`);
+  const endMs = Date.parse(`${rally.date}T${rally.endTime}:00+03:00`);
+  if (endMs <= Date.now()) return sendError(res, 409, 'EVENT_ENDED', 'This event has already ended');
+
+  try {
+    const landmarks = await loadLandmarks();
+    const pickup = landmarks.find(l => String(l.id) === fromId);
+    const pickupPoint = pickup && coords(pickup);
+    if (!pickupPoint) return sendError(res, 404, 'NOT_FOUND', 'Landmark not found');
+
+    const summary = summariseRides(await loadPassengerRides(pickupPoint, rally.location));
+    const pressure = assessPressure(rally, summary);
+
+    const etaMinutes = summary.fastest ? summary.fastest.etaMinutes : 0;
+    const leaveMs = startMs - (etaMinutes + pressure.bufferMinutes) * 60000;
+    const leaveIso = new Date(leaveMs + NAIROBI_OFFSET_MS).toISOString();
+
+    const alternativeDropoff = pressure.level === 'low'
+      ? null
+      : await findAlternativeDropoff(landmarks, pickup, pickupPoint, rally, summary);
+
+    res.json({
+      rally: {
+        id: rally.id,
+        title: rally.title,
+        venue: rally.venue,
+        date: rally.date,
+        startTime: rally.startTime,
+        endTime: rally.endTime,
+        expectedCrowd: rally.expectedCrowd
+      },
+      from: { id: String(pickup.id), name: pickup.name },
+      rides: { count: summary.count, fastest: summary.fastest, cheapest: summary.cheapest },
+      pressure,
+      leaveBy: {
+        date: leaveIso.slice(0, 10),
+        time: leaveIso.slice(11, 16),
+        basedOnEtaMinutes: etaMinutes,
+        bufferMinutes: pressure.bufferMinutes,
+        leaveNow: leaveMs <= Date.now()
+      },
+      alternativeDropoff,
+      disclaimer: 'Estimates only. Ride fares and ETAs reflect current conditions, not the event time. ' +
+        'Crowd pressure is a rule-based estimate from expected attendance and the number of ride options, not live demand.'
+    });
+  } catch (err) {
+    const reason = err.name === 'TimeoutError' ? 'timeout' : (err.cause?.code || err.message);
+    console.error('Rally travel advice failed:', reason);
+    res.status(502).json({ message: 'Partner data unavailable' });
+  }
 });
 
 // Unknown routes -> contract-shaped 404
