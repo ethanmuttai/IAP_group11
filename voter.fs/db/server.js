@@ -6,6 +6,8 @@ const Database = require('better-sqlite3');
 const { fetchWithRetry } = require('./resilientFetch');
 const { monitor, statsHandler } = require('./monitoring');
 const POLLING_STATIONS = require('./pollingStations');
+const { versioning } = require('./v2');
+const { landmarksPath, parseLandmarks } = require('./partner');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -67,6 +69,9 @@ function rateLimit({ windowMs, max }) {
 // REGISTER SECURITY MIDDLEWARES BEFORE ALL ROUTES
 app.use(requireApiKey);
 app.use(rateLimit({ windowMs: 60000, max: 100 })); // 100 requests per minute per key
+
+// API versioning: /api/v1/... and /api/v2/... (plain app.use, see db/v2.js)
+app.use(versioning);
 
 // GET /stats protected route
 app.get('/stats', statsHandler);
@@ -237,7 +242,7 @@ let lastGoodLandmarks = null; // { data, asof }
 // GET /api/transport/landmarks
 app.get('/api/transport/landmarks', async (req, res) => {
   try {
-    const partnerUrl = `${process.env.PARTNER_URL}/landmarks`;
+    const partnerUrl = `${process.env.PARTNER_URL}${landmarksPath()}`;
     const response = await fetchWithRetry(
       partnerUrl,
       {
@@ -253,7 +258,7 @@ app.get('/api/transport/landmarks', async (req, res) => {
       throw new Error(`Partner returned ${response.status}`);
     }
 
-    const landmarks = await response.json();
+    const landmarks = parseLandmarks(await response.json());
 
     lastGoodLandmarks = {
       data: landmarks,
@@ -630,8 +635,7 @@ async function fetchPartnerJson(path) {
 
 async function loadLandmarks() {
   try {
-    const list = await fetchPartnerJson('/landmarks');
-    if (!Array.isArray(list)) throw new Error('Unexpected landmarks format');
+    const list = parseLandmarks(await fetchPartnerJson(landmarksPath()));
     lastGoodLandmarks = { data: list, asof: new Date().toISOString() };
     return list;
   } catch (err) {

@@ -36,14 +36,20 @@ function monitor(req, res, next) {
     console.log(JSON.stringify({
       time: new Date().toISOString(),
       method: req.method,
-      path: req.path,
+      // originalUrl keeps /api/v2/... (req.path is rewritten by db/v2.js)
+      path: req.originalUrl.split('?')[0],
       status: res.statusCode,
       ms: round(ms),
       caller: who(req),
     }));
 
     // 2. Accumulate metrics grouped by route pattern (Part C)
-    const route = req.route ? (req.baseUrl || '') + req.route.path : '(no route)';
+    // Explicit /api/v1 or /api/v2 callers get their version in the label, so
+    // /stats shows who still uses v1. Unversioned /api/... stays as it is.
+    let route = req.route ? (req.baseUrl || '') + req.route.path : '(no route)';
+    if (req.route && /^\/api\/(v1|v2)(\/|$)/.test(req.originalUrl)) {
+      route = route.replace(/^\/api/, '/api/' + req.originalUrl.split('/')[2]);
+    }
     const label = `${req.method} ${route}`;
 
     const r = stats.routes[label] || newRoute();

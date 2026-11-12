@@ -9,9 +9,18 @@ info:
     reading candidate information, creating reviews, and replacing existing
     reviews.
 
+    Versioning: every path is also available under /api/v1 and /api/v2.
+    v1 (and the unversioned /api paths) returns lists as a bare JSON array and
+    is deprecated, with a Sunset date of 13 Nov 2026. v2 returns lists as
+    { data: [...], count: N }. Single objects and error bodies are identical
+    in both versions. Deprecated responses carry Deprecation, Sunset and Link
+    (rel=successor-version) headers.
+
 servers:
   - url: http://localhost:5000/api
-    description: Local development server
+    description: Local development server (v1, deprecated list shape)
+  - url: http://localhost:5000/api/v2
+    description: Local development server, v2 (lists wrapped as { data, count })
 
 paths:
   /candidates:
