@@ -4,7 +4,7 @@ const API_BASE = 'http://localhost:5000';
 
 const API_HEADERS = {
   'Content-Type': 'application/json',
-  'X-API-Key': 'cd4eb67fbb67b76473b4e323b3b53b573c43735a5f197b36'
+  'X-API-Key': process.env.REACT_APP_API_KEY
 };
 
 // The API has no logins, so we remember which reviews were posted from this

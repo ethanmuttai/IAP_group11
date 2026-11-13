@@ -13,7 +13,7 @@ const Home = () => {
   useEffect(() => {
     fetch(`${API_BASE}/api/candidates`, {
       headers: {
-        'X-API-Key': 'cd4eb67fbb67b76473b4e323b3b53b573c43735a5f197b36'
+        'X-API-Key': process.env.REACT_APP_API_KEY
       }
     })
       .then(res => res.json())

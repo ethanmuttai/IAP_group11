@@ -8,7 +8,7 @@ const STATIONS_URL = 'http://localhost:5000/api/polling-stations';
 
 const API_HEADERS = {
   'Content-Type': 'application/json',
-  'X-API-Key': 'cd4eb67fbb67b76473b4e323b3b53b573c43735a5f197b36'
+  'X-API-Key': process.env.REACT_APP_API_KEY
 };
 
 // Dates arrive as plain YYYY-MM-DD strings; format them in UTC so the day never shifts.

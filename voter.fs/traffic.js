@@ -1,7 +1,8 @@
 // traffic.js: sends a mix of requests to your VoterEdu API to populate metrics.
 // Run: node traffic.js
 const API = process.env.API || 'http://localhost:5000';
-const KEY = process.env.KEY || 'cd4eb67fbb67b76473b4e323b3b53b573c43735a5f197b36';
+const KEY = process.env.KEY;
+if (!KEY) { console.error('Set KEY to one of your API keys first, e.g. KEY=... node traffic.js'); process.exit(1); }
 const N = Number(process.env.N || 60);
 
 const mix = [

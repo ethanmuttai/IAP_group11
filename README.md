@@ -108,6 +108,28 @@ curl https://iap-group11.onrender.com/api/polling-stations/ps_001/nearest-landma
 
 (Windows PowerShell users: use `curl.exe`, and put the JSON body in a file, then pass `--data-binary "@body.json"`.)
 
+## Versioning
+
+| URL | Version | List responses |
+|---|---|---|
+| `/api/...` | v1 (unversioned, kept so nothing breaks) | bare JSON array, **deprecated** |
+| `/api/v1/...` | v1 | bare JSON array, **deprecated** |
+| `/api/v2/...` | v2 | `{ "data": [...], "count": N }` |
+
+The one breaking change: every endpoint that returned a list now wraps it as `{ data, count }` in v2. This covers `GET /candidates`, `/candidates/{id}/reviews`, `/rallies`, `/rallies/{id}/comments`, `/polling-stations` and `/transport/rides`. Single objects, POST and PUT bodies and error bodies are the same in both versions.
+
+v1 list responses carry these headers:
+
+```
+Deprecation: true
+Sunset: Fri, 13 Nov 2026 00:00:00 GMT
+Link: </api/v2/candidates>; rel="successor-version"
+```
+
+Migrating a caller: change `/api/candidates` to `/api/v2/candidates` and read `body.data` instead of `body`. See `voter.fs/DEPRECATION_NOTICE.md`.
+
+Upstream: we call Group 10's landmarks API through `voter.fs/db/partner.js`. Set `PARTNER_VERSION=v2` (default) or `v1` in `.env` to choose which of their versions we call. Run the tests with `npm run test:api` from `voter.fs`.
+
 ## Errors
 
 Every error returns JSON in the form `{ "code": "...", "message": "..." }`.
